@@ -15,7 +15,7 @@ type Question = {
   type: 'text' | 'image' | 'multipleChoice';
   text: string;
   answer: string;
-  imageUrl: string; // Make this required for 'image' type questions
+  imageUrl?: string; // Make imageUrl optional
   options?: string[];
 };
 
@@ -96,6 +96,9 @@ export default function EnhancedQuizApp() {
   const currentQuestion = shuffledQuestions[currentQuestionIndex];
 
   const renderQuestion = () => {
+    const currentQuestion = shuffledQuestions[currentQuestionIndex];
+    if (!currentQuestion) return null;
+
     switch (currentQuestion.type) {
       case 'text':
         return <p className="mb-4">{currentQuestion.text}</p>
