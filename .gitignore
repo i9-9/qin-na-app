@@ -9,8 +9,6 @@ yarn.lock
 .next/
 out/
 
-# Static files
-public/
 
 # Environment variables
 .env
