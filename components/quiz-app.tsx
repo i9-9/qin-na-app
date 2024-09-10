@@ -10,6 +10,15 @@ import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import { questions } from './questions'
 
+// Define the Question type if not already defined
+type Question = {
+  type: 'text' | 'image' | 'multipleChoice';
+  text: string;
+  answer: string;
+  imageUrl?: string;
+  options?: string[];
+};
+
 // Add this helper function at the top of your file
 function normalizeString(str: string): string {
   return str.toLowerCase()
@@ -19,7 +28,7 @@ function normalizeString(str: string): string {
 }
 
 export default function EnhancedQuizApp() {
-  const [shuffledQuestions, setShuffledQuestions] = useState([])
+  const [shuffledQuestions, setShuffledQuestions] = useState<Question[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [userAnswer, setUserAnswer] = useState('')
   const [feedback, setFeedback] = useState('')
