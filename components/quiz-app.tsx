@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,41 +10,65 @@ import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import { questions } from './questions'
 
+// Add this helper function at the top of your file
+function normalizeString(str: string): string {
+  return str.toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
 export default function EnhancedQuizApp() {
+  const [shuffledQuestions, setShuffledQuestions] = useState([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [userAnswer, setUserAnswer] = useState('')
   const [feedback, setFeedback] = useState('')
   const [isAnswered, setIsAnswered] = useState(false)
   const [score, setScore] = useState(0)
   const [quizCompleted, setQuizCompleted] = useState(false)
-
-  const currentQuestion = questions[currentQuestionIndex]
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (quizCompleted) {
-      // You can add any post-quiz actions here, like saving the score
-      console.log(`Quiz completed! Final score: ${score}/${questions.length}`)
-    }
-  }, [quizCompleted, score])
+    // Shuffle questions when component mounts
+    const shuffled = [...questions].sort(() => Math.random() - 0.5)
+    setShuffledQuestions(shuffled)
+  }, [])
 
-  const handleSubmit = () => {
-    const isCorrect = userAnswer.toLowerCase() === currentQuestion.answer.toLowerCase()
-    setFeedback(isCorrect ? 'Correct!' : `Incorrect. The correct answer is ${currentQuestion.answer}.`)
-    setIsAnswered(true)
-    if (isCorrect) setScore(prevScore => prevScore + 1)
+  useEffect(() => {
+    // Focus on the input field when a new question is presented
+    if (inputRef.current && !isAnswered && shuffledQuestions[currentQuestionIndex]?.type !== 'multipleChoice') {
+      inputRef.current.focus()
+    }
+  }, [currentQuestionIndex, isAnswered, shuffledQuestions])
+
+  const handleKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' && !isAnswered && shuffledQuestions[currentQuestionIndex]) {
+      const currentQuestion = shuffledQuestions[currentQuestionIndex];
+      const isCorrect = normalizeString(userAnswer) === normalizeString(currentQuestion.answer);
+      setFeedback(isCorrect ? 'Correcto!' : `Incorrecto. La respuesta correcta es: ${currentQuestion.answer}.`);
+      setIsAnswered(true);
+      if (isCorrect) setScore(prevScore => prevScore + 1);
+      
+      // Move to next question after a short delay
+      setTimeout(() => {
+        if (currentQuestionIndex < shuffledQuestions.length - 1) {
+          setCurrentQuestionIndex(currentQuestionIndex + 1);
+          setUserAnswer('');
+          setFeedback('');
+          setIsAnswered(false);
+        } else {
+          setQuizCompleted(true);
+          setFeedback(`Cuestionario completado! Tu puntuación es ${score + (isCorrect ? 1 : 0)}/${shuffledQuestions.length}`);
+        }
+      }, 1500); // 1.5 second delay
+    }
+  };
+
+  if (shuffledQuestions.length === 0) {
+    return <div>Loading questions...</div>
   }
 
-  const handleNext = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1)
-      setUserAnswer('')
-      setFeedback('')
-      setIsAnswered(false)
-    } else {
-      setQuizCompleted(true)
-      setFeedback(`Quiz completed! Your score: ${score + (isAnswered && userAnswer.toLowerCase() === currentQuestion.answer.toLowerCase() ? 1 : 0)}/${questions.length}`)
-    }
-  }
+  const currentQuestion = shuffledQuestions[currentQuestionIndex];
 
   const renderQuestion = () => {
     switch (currentQuestion.type) {
@@ -77,6 +101,8 @@ export default function EnhancedQuizApp() {
             </RadioGroup>
           </div>
         )
+      default:
+        return <p>Invalid question type</p>
     }
   }
 
@@ -84,10 +110,12 @@ export default function EnhancedQuizApp() {
     if (currentQuestion.type === 'multipleChoice') return null
     return (
       <Input
+        ref={inputRef}
         type="text"
-        placeholder="Your answer"
+        placeholder="Respuesta"
         value={userAnswer}
         onChange={(e) => setUserAnswer(e.target.value)}
+        onKeyDown={handleKeyPress}
         disabled={isAnswered}
         className="mb-4"
       />
@@ -95,16 +123,15 @@ export default function EnhancedQuizApp() {
   }
 
   return (
-    <div className="flex justify-center items-center max-h-screen">
+    <div className="flex justify-center items-center max-h-screen" onKeyDown={handleKeyPress}>
       <Card className="w-full max-w-2xl">
         <CardHeader>
-          <CardTitle>Qin-Na</CardTitle>
           <Progress value={(currentQuestionIndex + 1) / questions.length * 100} className="w-full" />
         </CardHeader>
         <CardContent>
           {!quizCompleted ? (
             <>
-              <p className="mb-4 text-sm text-gray-500">Question {currentQuestionIndex + 1} of {questions.length}</p>
+              <p className="mb-4 text-sm text-gray-500">Pregunta {currentQuestionIndex + 1} de {questions.length}</p>
               {renderQuestion()}
               {renderAnswerInput()}
               {feedback && <p className="mt-4 text-sm font-medium" role="alert">{feedback}</p>}
@@ -132,4 +159,23 @@ export default function EnhancedQuizApp() {
       </Card>
     </div>
   )
+}
+
+const handleSubmit = () => {
+  const isCorrect = normalizeString(userAnswer) === normalizeString(currentQuestion.answer);
+  setFeedback(isCorrect ? 'Correcto!' : `Incorrecto. La respuesta correcta es: ${currentQuestion.answer}.`);
+  setIsAnswered(true);
+  if (isCorrect) setScore(prevScore => prevScore + 1);
+}
+
+const handleNext = () => {
+  if (currentQuestionIndex < questions.length - 1) {
+    setCurrentQuestionIndex(currentQuestionIndex + 1)
+    setUserAnswer('')
+    setFeedback('')
+    setIsAnswered(false)
+  } else {
+    setQuizCompleted(true)
+    setFeedback(`Quiz completed! Your score: ${score + (isAnswered && userAnswer.toLowerCase() === currentQuestion.answer.toLowerCase() ? 1 : 0)}/${questions.length}`)
+  }
 }
