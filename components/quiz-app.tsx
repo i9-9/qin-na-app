@@ -29,6 +29,7 @@ function normalizeString(str: string): string {
 }
 
 export default function EnhancedQuizApp() {
+  const [quizType, setQuizType] = useState<'blanco' | 'avanzado' | null>(null);
   const [shuffledQuestions, setShuffledQuestions] = useState<Question[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [userAnswer, setUserAnswer] = useState('')
@@ -40,9 +41,14 @@ export default function EnhancedQuizApp() {
   const { theme, setTheme } = useTheme()
 
   useEffect(() => {
-    const shuffled = [...questions].sort(() => Math.random() - 0.5)
-    setShuffledQuestions(shuffled)
-  }, [])
+    if (quizType) {
+      const filteredQuestions = quizType === 'blanco' 
+        ? questions.filter(q => parseInt(q.text.split(' ').pop() || '0') <= 18)
+        : questions;
+      const shuffled = [...filteredQuestions].sort(() => Math.random() - 0.5);
+      setShuffledQuestions(shuffled);
+    }
+  }, [quizType]);
 
   useEffect(() => {
     if (inputRef.current && !isAnswered && shuffledQuestions[currentQuestionIndex]?.type !== 'multipleChoice') {
@@ -160,28 +166,32 @@ export default function EnhancedQuizApp() {
   const renderFeedback = () => {
     if (!feedback) return null;
     const isCorrect = feedback.startsWith('Correcto');
-    const [result, ...restOfFeedback] = feedback.split('\n');
     return (
-      <div className="mt-4 space-y-2">
-        <div className="flex items-center space-x-2">
-          <Circle
-            className={`w-4 h-4 ${isCorrect ? 'text-green-500' : 'text-red-500'} fill-current`}
-          />
-          <p className="text-sm font-medium" role="alert">
-            {result}
-          </p>
-        </div>
-        {restOfFeedback.length > 0 && (
-          <p className="text-sm font-medium pl-6 whitespace-pre-line">
-            {restOfFeedback.join('\n')}
-          </p>
-        )}
+      <div className="mt-4 flex items-start space-x-2">
+        <Circle
+          className={`w-4 h-4 mt-1 ${isCorrect ? 'text-green-500' : 'text-red-500'} fill-current`}
+        />
+        <p className="text-sm font-medium break-words overflow-hidden whitespace-pre-line" role="alert">
+          {feedback}
+        </p>
       </div>
     );
   };
 
+  if (!quizType) {
+    return (
+      <div className="flex flex-col items-center justify-center bg-background text-foreground">
+        <h2 className="text-2xl font-bold mb-4">Elige el tipo de cuestionario:</h2>
+        <div className="space-x-4">
+          <Button onClick={() => setQuizType('blanco')}>Blanco (1-18)</Button>
+          <Button onClick={() => setQuizType('avanzado')}>Avanzado (1-32)</Button>
+        </div>
+      </div>
+    );
+  }
+
   if (shuffledQuestions.length === 0) {
-    return <div className='text-center my-10 border border-gray-300 p-4 rounded-md text-gray-300'>Cargando preguntas...</div>
+    return <div className="text-center my-10">Cargando preguntas...</div>;
   }
 
   return (
