@@ -42,6 +42,17 @@ export default function EnhancedQuizApp() {
   const inputRef = useRef<HTMLInputElement>(null)
   const { theme, setTheme } = useTheme()
 
+  const resetQuiz = () => {
+    setQuizType(null);
+    setShuffledQuestions([]);
+    setCurrentQuestionIndex(0);
+    setUserAnswer('');
+    setFeedback('');
+    setIsAnswered(false);
+    setScore(0);
+    setQuizCompleted(false);
+  };
+
   useEffect(() => {
     if (quizType) {
       const filteredQuestions = quizType === 'blanco' 
@@ -212,7 +223,7 @@ export default function EnhancedQuizApp() {
               Toggle theme
             </Label>
           </div>
-          <MobileMenu />
+          <MobileMenu resetQuiz={resetQuiz} />
         </div>
       </header>
       <main className="flex justify-center items-center p-4">
