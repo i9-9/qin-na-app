@@ -8,18 +8,18 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
+import { Switch } from "@/components/ui/switch"
+import { useTheme } from "next-themes"
 import { questions } from './questions'
 
-// Define the Question type if not already defined
 type Question = {
   type: 'text' | 'image' | 'multipleChoice';
   text: string;
   answer: string;
-  imageUrl?: string; // Make imageUrl optional
+  imageUrl?: string;
   options?: string[];
 };
 
-// Add this helper function at the top of your file
 function normalizeString(str: string): string {
   return str.toLowerCase()
     .normalize("NFD")
@@ -36,15 +36,14 @@ export default function EnhancedQuizApp() {
   const [score, setScore] = useState(0)
   const [quizCompleted, setQuizCompleted] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const { theme, setTheme } = useTheme()
 
   useEffect(() => {
-    // Shuffle questions when component mounts
     const shuffled = [...questions].sort(() => Math.random() - 0.5)
     setShuffledQuestions(shuffled)
   }, [])
 
   useEffect(() => {
-    // Focus on the input field when a new question is presented
     if (inputRef.current && !isAnswered && shuffledQuestions[currentQuestionIndex]?.type !== 'multipleChoice') {
       inputRef.current.focus()
     }
@@ -63,7 +62,6 @@ export default function EnhancedQuizApp() {
     setIsAnswered(true);
     if (isCorrect) setScore(prevScore => prevScore + 1);
     
-    // Move to next question after a short delay
     setTimeout(() => {
       if (currentQuestionIndex < shuffledQuestions.length - 1) {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -74,7 +72,7 @@ export default function EnhancedQuizApp() {
         setQuizCompleted(true);
         setFeedback(`Cuestionario completado! Tu puntuación es ${score + (isCorrect ? 1 : 0)}/${shuffledQuestions.length}`);
       }
-    }, 1500); // 1.5 second delay
+    }, 2500);
   }
 
   const handleNext = () => {
@@ -85,15 +83,9 @@ export default function EnhancedQuizApp() {
       setIsAnswered(false)
     } else {
       setQuizCompleted(true)
-      setFeedback(`Cuestionario completado! Tu puntuación es ${score + (isAnswered && userAnswer.toLowerCase() === currentQuestion.answer.toLowerCase() ? 1 : 0)}/${shuffledQuestions.length}`)
+      setFeedback(`Cuestionario completado! Tu puntuación es ${score + (isAnswered && userAnswer.toLowerCase() === shuffledQuestions[currentQuestionIndex].answer.toLowerCase() ? 1 : 0)}/${shuffledQuestions.length}`)
     }
   }
-
-  if (shuffledQuestions.length === 0) {
-    return <div>Loading questions...</div>
-  }
-
-  const currentQuestion = shuffledQuestions[currentQuestionIndex];
 
   const renderQuestion = () => {
     const currentQuestion = shuffledQuestions[currentQuestionIndex];
@@ -137,7 +129,7 @@ export default function EnhancedQuizApp() {
   }
 
   const renderAnswerInput = () => {
-    if (currentQuestion.type === 'multipleChoice') return null
+    if (shuffledQuestions[currentQuestionIndex]?.type === 'multipleChoice') return null
     return (
       <Input
         ref={inputRef}
@@ -152,19 +144,36 @@ export default function EnhancedQuizApp() {
     )
   }
 
+  if (shuffledQuestions.length === 0) {
+    return <div className='text-center my-10 border border-gray-300 p-4 rounded-md text-gray-300'>Cargando preguntas...</div>
+  }
+
   return (
-    <div className="flex justify-center items-center max-h-screen" onKeyDown={handleKeyPress}>
+    <div className="flex flex-col items-center min-h-screen bg-background text-foreground p-4">
+      <div className="flex items-center justify-center w-full max-w-2xl mb-4">
+        <Label htmlFor="dark-mode" className="mr-2">
+        </Label>
+        <Switch
+          id="dark-mode"
+          checked={theme === 'dark'}
+          onCheckedChange={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        />
+      </div>
       <Card className="w-full max-w-2xl">
         <CardHeader>
           <Progress value={(currentQuestionIndex + 1) / shuffledQuestions.length * 100} className="w-full" />
         </CardHeader>
-        <CardContent>
+        <CardContent className="min-h-[200px]">
           {!quizCompleted ? (
             <>
-              <p className="mb-4 text-sm text-gray-500">Pregunta {currentQuestionIndex + 1} de {shuffledQuestions.length}</p>
+              <p className="mb-4 text-sm text-muted-foreground">Pregunta {currentQuestionIndex + 1} de {shuffledQuestions.length}</p>
               {renderQuestion()}
               {renderAnswerInput()}
-              {feedback && <p className="mt-4 text-sm font-medium" role="alert">{feedback}</p>}
+              {feedback && (
+                <p className="mt-4 text-sm font-medium break-words overflow-hidden" role="alert">
+                  {feedback}
+                </p>
+              )}
             </>
           ) : (
             <div className="text-center">
