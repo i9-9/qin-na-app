@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch"
 import { useTheme } from "next-themes"
 import { questions } from './questions'
 import { Circle } from 'lucide-react'
+import { MobileMenu } from "@/components/MobileMenu"
 
 type Question = {
   type: 'text' | 'image' | 'multipleChoice';
@@ -21,12 +22,13 @@ type Question = {
   options?: string[];
 };
 
-function normalizeString(str: string): string {
-  return str.toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim();
-}
+const normalizeString = (str: string) => 
+  str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+const isAnswerCorrect = (userAnswer: string, correctAnswer: string) => {
+  const normalizedUserAnswer = normalizeString(userAnswer);
+  return correctAnswer.split('|').some(answer => normalizeString(answer) === normalizedUserAnswer);
+};
 
 export default function EnhancedQuizApp() {
   const [quizType, setQuizType] = useState<'blanco' | 'avanzado' | null>(null);
@@ -64,8 +66,9 @@ export default function EnhancedQuizApp() {
 
   const handleSubmit = () => {
     const currentQuestion = shuffledQuestions[currentQuestionIndex];
-    const isCorrect = userAnswer.trim() !== '' && normalizeString(userAnswer) === normalizeString(currentQuestion.answer);
-    setFeedback(isCorrect ? 'Correcto!' : `Incorrecto.\nLa respuesta correcta es:\n\n${currentQuestion.answer}`);
+    const isCorrect = userAnswer.trim() !== '' && isAnswerCorrect(userAnswer, currentQuestion.answer);
+    const correctAnswer = currentQuestion.answer.split('|')[0]; // Use the first correct answer
+    setFeedback(isCorrect ? 'Correcto!' : `Incorrecto.\nLa respuesta correcta es:\n\n${correctAnswer}`);
     setIsAnswered(true);
     if (isCorrect) setScore(prevScore => prevScore + 1);
     
@@ -84,7 +87,8 @@ export default function EnhancedQuizApp() {
 
   const handleNext = () => {
     if (!isAnswered) {
-      setFeedback(`Pregunta salteada.\nLa respuesta correcta es:\n\n${shuffledQuestions[currentQuestionIndex].answer}`);
+      const correctAnswer = shuffledQuestions[currentQuestionIndex].answer.split('|')[0]; // Use the first correct answer
+      setFeedback(`Pregunta salteada.\nLa respuesta correcta es:\n\n${correctAnswer}`);
       setIsAnswered(true);
       setTimeout(() => {
         moveToNextQuestion();
@@ -180,7 +184,7 @@ export default function EnhancedQuizApp() {
 
   if (!quizType) {
     return (
-      <div className="flex flex-col items-center justify-center bg-background text-foreground">
+      <div className="flex flex-col items-center justify-center bg-background text-foreground mt-4">
         <h2 className="text-2xl font-bold mb-4">Elige el tipo de cuestionario:</h2>
         <div className="space-x-4">
           <Button onClick={() => setQuizType('blanco')}>Blanco (1-18)</Button>
@@ -195,49 +199,57 @@ export default function EnhancedQuizApp() {
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-background text-foreground p-4">
-      <div className="flex items-center justify-center w-full max-w-2xl mb-4">
-        <Label htmlFor="dark-mode" className="mr-2">
-        </Label>
-        <Switch
-          id="dark-mode"
-          checked={theme === 'dark'}
-          onCheckedChange={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-        />
-      </div>
-      <Card className="w-full max-w-2xl">
-        <CardHeader>
-          <Progress value={(currentQuestionIndex + 1) / shuffledQuestions.length * 100} className="w-full" />
-        </CardHeader>
-        <CardContent className="min-h-[200px]">
-          {!quizCompleted ? (
-            <>
-              <p className="mb-4 text-sm text-muted-foreground">Pregunta {currentQuestionIndex + 1} de {shuffledQuestions.length}</p>
-              {renderQuestion()}
-              {renderAnswerInput()}
-              {renderFeedback()}
-            </>
-          ) : (
-            <div className="text-center">
-              <h2 className="text-2xl font-bold mb-4">Cuestionario completado!</h2>
-              <p className="text-lg">Tu puntuación es: {score}/{shuffledQuestions.length}</p>
-              <Button onClick={() => window.location.reload()} className="mt-4">
-                Volver a empezar
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
+      <header className="flex justify-around items-center p-4 border-b">
+        <div className="flex flex-row items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="dark-mode"
+              checked={theme === 'dark'}
+              onCheckedChange={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            />
+            <Label htmlFor="dark-mode" className="sr-only">
+              Toggle theme
+            </Label>
+          </div>
+          <MobileMenu />
+        </div>
+      </header>
+      <main className="flex justify-center items-center p-4">
+        <Card className="w-full max-w-2xl">
+          <CardHeader>
+            <Progress value={(currentQuestionIndex + 1) / shuffledQuestions.length * 100} className="w-full" />
+          </CardHeader>
+          <CardContent className="min-h-[200px]">
+            {!quizCompleted ? (
+              <>
+                <p className="mb-4 text-sm text-muted-foreground">Pregunta {currentQuestionIndex + 1} de {shuffledQuestions.length}</p>
+                {renderQuestion()}
+                {renderAnswerInput()}
+                {renderFeedback()}
+              </>
+            ) : (
+              <div className="text-center">
+                <h2 className="text-2xl font-bold mb-4">Cuestionario completado!</h2>
+                <p className="text-lg">Tu puntuación es: {score}/{shuffledQuestions.length}</p>
+                <Button onClick={() => window.location.reload()} className="mt-4">
+                  Volver a empezar
+                </Button>
+              </div>
+            )}
+          </CardContent>
+          {!quizCompleted && (
+            <CardFooter className="flex justify-between">
+              <Button onClick={handleSubmit} disabled={isAnswered || userAnswer.trim() === ''}>
+                Enviar
               </Button>
-            </div>
+              <Button onClick={handleNext}>
+                {currentQuestionIndex < shuffledQuestions.length - 1 ? 'Próxima' : 'Terminar'}
+              </Button>
+            </CardFooter>
           )}
-        </CardContent>
-        {!quizCompleted && (
-          <CardFooter className="flex justify-between">
-            <Button onClick={handleSubmit} disabled={isAnswered || userAnswer.trim() === ''}>
-              Enviar
-            </Button>
-            <Button onClick={handleNext}>
-              {currentQuestionIndex < shuffledQuestions.length - 1 ? 'Próxima' : 'Terminar'}
-            </Button>
-          </CardFooter>
-        )}
-      </Card>
+        </Card>
+      </main>
     </div>
   )
 }
