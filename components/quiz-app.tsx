@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress"
 import { Switch } from "@/components/ui/switch"
 import { useTheme } from "next-themes"
 import { questions } from './questions'
+import { Circle } from 'lucide-react'
 
 type Question = {
   type: 'text' | 'image' | 'multipleChoice';
@@ -57,8 +58,8 @@ export default function EnhancedQuizApp() {
 
   const handleSubmit = () => {
     const currentQuestion = shuffledQuestions[currentQuestionIndex];
-    const isCorrect = normalizeString(userAnswer) === normalizeString(currentQuestion.answer);
-    setFeedback(isCorrect ? 'Correcto!' : `Incorrecto. La respuesta correcta es: ${currentQuestion.answer}.`);
+    const isCorrect = userAnswer.trim() !== '' && normalizeString(userAnswer) === normalizeString(currentQuestion.answer);
+    setFeedback(isCorrect ? 'Correcto!' : `Incorrecto.\nLa respuesta correcta es:\n\n${currentQuestion.answer}`);
     setIsAnswered(true);
     if (isCorrect) setScore(prevScore => prevScore + 1);
     
@@ -76,14 +77,26 @@ export default function EnhancedQuizApp() {
   }
 
   const handleNext = () => {
-    if (currentQuestionIndex < shuffledQuestions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1)
-      setUserAnswer('')
-      setFeedback('')
-      setIsAnswered(false)
+    if (!isAnswered) {
+      setFeedback(`Pregunta salteada.\nLa respuesta correcta es:\n\n${shuffledQuestions[currentQuestionIndex].answer}`);
+      setIsAnswered(true);
+      setTimeout(() => {
+        moveToNextQuestion();
+      }, 2500);
     } else {
-      setQuizCompleted(true)
-      setFeedback(`Cuestionario completado! Tu puntuación es ${score + (isAnswered && userAnswer.toLowerCase() === shuffledQuestions[currentQuestionIndex].answer.toLowerCase() ? 1 : 0)}/${shuffledQuestions.length}`)
+      moveToNextQuestion();
+    }
+  }
+
+  const moveToNextQuestion = () => {
+    if (currentQuestionIndex < shuffledQuestions.length - 1) {
+      setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+      setUserAnswer('');
+      setFeedback('');
+      setIsAnswered(false);
+    } else {
+      setQuizCompleted(true);
+      setFeedback(`Cuestionario completado! Tu puntuación es ${score}/${shuffledQuestions.length}`);
     }
   }
 
@@ -144,6 +157,29 @@ export default function EnhancedQuizApp() {
     )
   }
 
+  const renderFeedback = () => {
+    if (!feedback) return null;
+    const isCorrect = feedback.startsWith('Correcto');
+    const [result, ...restOfFeedback] = feedback.split('\n');
+    return (
+      <div className="mt-4 space-y-2">
+        <div className="flex items-center space-x-2">
+          <Circle
+            className={`w-4 h-4 ${isCorrect ? 'text-green-500' : 'text-red-500'} fill-current`}
+          />
+          <p className="text-sm font-medium" role="alert">
+            {result}
+          </p>
+        </div>
+        {restOfFeedback.length > 0 && (
+          <p className="text-sm font-medium pl-6 whitespace-pre-line">
+            {restOfFeedback.join('\n')}
+          </p>
+        )}
+      </div>
+    );
+  };
+
   if (shuffledQuestions.length === 0) {
     return <div className='text-center my-10 border border-gray-300 p-4 rounded-md text-gray-300'>Cargando preguntas...</div>
   }
@@ -169,11 +205,7 @@ export default function EnhancedQuizApp() {
               <p className="mb-4 text-sm text-muted-foreground">Pregunta {currentQuestionIndex + 1} de {shuffledQuestions.length}</p>
               {renderQuestion()}
               {renderAnswerInput()}
-              {feedback && (
-                <p className="mt-4 text-sm font-medium break-words overflow-hidden" role="alert">
-                  {feedback}
-                </p>
-              )}
+              {renderFeedback()}
             </>
           ) : (
             <div className="text-center">
@@ -190,7 +222,7 @@ export default function EnhancedQuizApp() {
             <Button onClick={handleSubmit} disabled={isAnswered || userAnswer.trim() === ''}>
               Enviar
             </Button>
-            <Button onClick={handleNext} disabled={!isAnswered}>
+            <Button onClick={handleNext}>
               {currentQuestionIndex < shuffledQuestions.length - 1 ? 'Próxima' : 'Terminar'}
             </Button>
           </CardFooter>

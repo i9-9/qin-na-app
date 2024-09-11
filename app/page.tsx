@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center py-0">
       <div className='flex flex-col items-center justify-center'>
-        <h1 className="text-4xl font-bold mb-4">Qin-Na</h1>
+        <h1 className="text-4xl font-bold mt-8">Qin-Na</h1>
         <h2>Escuela Loto Blanco Lianhua</h2>
         <Image
           src="/images/logo_loto.png"
