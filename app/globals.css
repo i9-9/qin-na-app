@@ -24,6 +24,26 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
+
+    /* Sistema de cuadrícula brutalista */
+    --grid-columns: 12;
+    --grid-gutter: 1rem;
+    --container-margin: 2rem;
+    
+    /* Espaciado brutalista */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 1rem;
+    --space-4: 1.5rem;
+    --space-5: 2rem;
+    --space-6: 3rem;
+    --space-7: 4rem;
+    --space-8: 6rem;
+    
+    /* Tipografía brutalista */
+    --type-scale-ratio: 1.25;
+    --font-size-base: 1rem;
+    --line-height-base: 1.5;
   }
 
   .dark {
@@ -52,8 +72,207 @@
 @layer base {
   * {
     @apply border-border;
+    box-sizing: border-box;
   }
   body {
     @apply bg-background text-foreground;
+    margin: 0;
+    padding: 0;
   }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "trajan-sans-pro", sans-serif;
+    margin: 0;
+    line-height: 1.2;
+  }
+}
+
+/* Utility classes para Trajan Sans Pro */
+.font-trajan {
+  font-family: "trajan-sans-pro", sans-serif;
+}
+
+.font-trajan-regular {
+  font-family: "trajan-sans-pro", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.font-trajan-bold {
+  font-family: "trajan-sans-pro", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.font-trajan-black {
+  font-family: "trajan-sans-pro", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+/* Sistema de grid brutalista */
+.grid-container {
+  width: 100%;
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-margin);
+  padding-right: var(--container-margin);
+}
+
+.grid-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: calc(-1 * var(--grid-gutter) / 2);
+  margin-right: calc(-1 * var(--grid-gutter) / 2);
+}
+
+.grid-col {
+  padding-left: calc(var(--grid-gutter) / 2);
+  padding-right: calc(var(--grid-gutter) / 2);
+  width: 100%;
+}
+
+/* Columnas del 1 al 12 */
+@media (min-width: 640px) {
+  .grid-col-1 { width: calc(100% / 12 * 1); }
+  .grid-col-2 { width: calc(100% / 12 * 2); }
+  .grid-col-3 { width: calc(100% / 12 * 3); }
+  .grid-col-4 { width: calc(100% / 12 * 4); }
+  .grid-col-5 { width: calc(100% / 12 * 5); }
+  .grid-col-6 { width: calc(100% / 12 * 6); }
+  .grid-col-7 { width: calc(100% / 12 * 7); }
+  .grid-col-8 { width: calc(100% / 12 * 8); }
+  .grid-col-9 { width: calc(100% / 12 * 9); }
+  .grid-col-10 { width: calc(100% / 12 * 10); }
+  .grid-col-11 { width: calc(100% / 12 * 11); }
+  .grid-col-12 { width: 100%; }
+}
+
+/* Espaciado brutalista */
+.brutalist-p-1 { padding: var(--space-1); }
+.brutalist-p-2 { padding: var(--space-2); }
+.brutalist-p-3 { padding: var(--space-3); }
+.brutalist-p-4 { padding: var(--space-4); }
+.brutalist-p-5 { padding: var(--space-5); }
+
+/* Padding direccional */
+.brutalist-pt-1 { padding-top: var(--space-1); }
+.brutalist-pt-2 { padding-top: var(--space-2); }
+.brutalist-pt-3 { padding-top: var(--space-3); }
+.brutalist-pt-4 { padding-top: var(--space-4); }
+.brutalist-pt-5 { padding-top: var(--space-5); }
+
+.brutalist-pb-1 { padding-bottom: var(--space-1); }
+.brutalist-pb-2 { padding-bottom: var(--space-2); }
+.brutalist-pb-3 { padding-bottom: var(--space-3); }
+.brutalist-pb-4 { padding-bottom: var(--space-4); }
+.brutalist-pb-5 { padding-bottom: var(--space-5); }
+
+.brutalist-pl-1 { padding-left: var(--space-1); }
+.brutalist-pl-2 { padding-left: var(--space-2); }
+.brutalist-pl-3 { padding-left: var(--space-3); }
+.brutalist-pl-4 { padding-left: var(--space-4); }
+.brutalist-pl-5 { padding-left: var(--space-5); }
+
+.brutalist-pr-1 { padding-right: var(--space-1); }
+.brutalist-pr-2 { padding-right: var(--space-2); }
+.brutalist-pr-3 { padding-right: var(--space-3); }
+.brutalist-pr-4 { padding-right: var(--space-4); }
+.brutalist-pr-5 { padding-right: var(--space-5); }
+
+.brutalist-m-1 { margin: var(--space-1); }
+.brutalist-m-2 { margin: var(--space-2); }
+.brutalist-m-3 { margin: var(--space-3); }
+.brutalist-m-4 { margin: var(--space-4); }
+.brutalist-m-5 { margin: var(--space-5); }
+
+/* Margen direccional */
+.brutalist-mt-1 { margin-top: var(--space-1); }
+.brutalist-mt-2 { margin-top: var(--space-2); }
+.brutalist-mt-3 { margin-top: var(--space-3); }
+.brutalist-mt-4 { margin-top: var(--space-4); }
+.brutalist-mt-5 { margin-top: var(--space-5); }
+
+.brutalist-mb-1 { margin-bottom: var(--space-1); }
+.brutalist-mb-2 { margin-bottom: var(--space-2); }
+.brutalist-mb-3 { margin-bottom: var(--space-3); }
+.brutalist-mb-4 { margin-bottom: var(--space-4); }
+.brutalist-mb-5 { margin-bottom: var(--space-5); }
+.brutalist-mb-6 { margin-bottom: var(--space-6); }
+.brutalist-mb-7 { margin-bottom: var(--space-7); }
+.brutalist-mb-8 { margin-bottom: var(--space-8); }
+
+.brutalist-ml-1 { margin-left: var(--space-1); }
+.brutalist-ml-2 { margin-left: var(--space-2); }
+.brutalist-ml-3 { margin-left: var(--space-3); }
+.brutalist-ml-4 { margin-left: var(--space-4); }
+.brutalist-ml-5 { margin-left: var(--space-5); }
+
+.brutalist-mr-1 { margin-right: var(--space-1); }
+.brutalist-mr-2 { margin-right: var(--space-2); }
+.brutalist-mr-3 { margin-right: var(--space-3); }
+.brutalist-mr-4 { margin-right: var(--space-4); }
+.brutalist-mr-5 { margin-right: var(--space-5); }
+
+/* Espaciado entre items en un contenedor */
+.brutalist-gap-1 { gap: var(--space-1); }
+.brutalist-gap-2 { gap: var(--space-2); }
+.brutalist-gap-3 { gap: var(--space-3); }
+.brutalist-gap-4 { gap: var(--space-4); }
+.brutalist-gap-5 { gap: var(--space-5); }
+
+.brutalist-card {
+  border: 2px solid;
+  padding: var(--space-4);
+  box-shadow: 5px 5px 0 0 rgba(0,0,0,0.8);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: var(--space-4);
+}
+
+.brutalist-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 0 rgba(0,0,0,0.9);
+}
+
+/* Contenedor con espacio inferior garantizado */
+.brutalist-container-safe {
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-4);
+  position: relative;
+}
+
+.brutalist-container-safe::after {
+  content: '';
+  display: block;
+  height: var(--space-5);
+  width: 100%;
+  position: absolute;
+  bottom: calc(-1 * var(--space-5));
+}
+
+/* Layout de página con márgenes seguros */
+.brutalist-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--space-6);
+}
+
+.brutalist-main {
+  flex-grow: 1;
+  padding-bottom: var(--space-6);
+}
+
+/* Garantizar siempre margen inferior */
+@media (max-height: 768px) {
+  .brutalist-safe-bottom {
+    margin-bottom: var(--space-5);
+  }
+}
+
+/* Corrige el problema del margen colapsado */
+.brutalist-footer {
+  margin-top: auto;
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-4);
 }

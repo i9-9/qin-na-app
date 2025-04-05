@@ -33,12 +33,12 @@ export function MobileMenu({ resetQuiz }: MobileMenuProps) {
         </Button>
       </SheetTrigger>
       <SheetContent side="left">
-        <nav className="flex flex-col space-y-4">
+        <nav className="flex flex-col space-y-4 mt-8">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-lg font-medium hover:underline"
+              className="text-lg font-trajan hover:underline transition-all"
               onClick={() => handleLinkClick(link.href)}
             >
               {link.label}

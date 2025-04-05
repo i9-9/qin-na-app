@@ -4,21 +4,33 @@ import Link from 'next/link'
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center py-0">
-      <div className='flex flex-col items-center justify-center'>
-        <h1 className="text-4xl font-bold mt-8">Qin-Na</h1>
-        <h2>Escuela Loto Blanco Lianhua</h2>
-        <Link href="/">
-          <Image
-            src="/images/logo_loto.png"
-            alt="Logo Loto"
-            width={230}  
-            height={230} 
-            className="mt-4 shadow-xl my-2 rounded-lg"
-          />
-        </Link>
+    <main className="h-screen flex flex-col overflow-hidden bg-background">
+      <div className="p-2 md:p-4">
+        <nav className="flex justify-between items-center border-2 border-foreground">
+          <div className="flex items-center p-2">
+            <Link href="/" className="mr-4">
+              <Image
+                src="/images/logo_loto.png"
+                alt="Logo Loto"
+                width={50}  
+                height={50} 
+                className="transition-transform"
+                priority
+              />
+            </Link>
+            <div>
+              <h1 className="text-xl md:text-2xl font-trajan-black uppercase tracking-wider">Qin-Na</h1>
+              <h2 className="text-xs md:text-sm font-trajan-regular tracking-wide">Escuela Loto Blanco Lianhua</h2>
+            </div>
+          </div>
+        </nav>
       </div>
-      <QuizApp />
+
+      <div className="flex-grow p-2 md:p-4">
+        <div className="h-full border-2 border-foreground">
+          <QuizApp />
+        </div>
+      </div>
     </main>
   )
 }

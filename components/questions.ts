@@ -20,14 +20,19 @@ export interface MultipleChoiceQuestion extends BaseQuestion {
   options: string[];
 }
 
-export type Question = TextQuestion | ImageQuestion | MultipleChoiceQuestion;
+export type Question = {
+  id: number;
+  type: 'text' | 'image' | 'multipleChoice';
+  text: string;
+  answer: string;
+  imageUrl?: string;
+};
 
-// Sample questions
 export const questions: Question[] = [
   { id: 1, type: 'text', text: "Cuál es la palanca nº 1?", answer: "Muñeca de oro y de seda|Muñeca de oro y seda" },
   { id: 2, type: 'text', text: "Cuál es la palanca nº 2?", answer: "Mano corta como cuchillo|Mano que corta como cuchillo" },
   { id: 3, type: 'text', text: "Cuál es la palanca nº 3?", answer: "Arrodillarse a pedir limosna" },
-  { id: 4, type: 'text', text: "Cuál es la palanca nº 4?", answer: "Xiang zi lleva la canasta" },
+  { id: 4, type: 'text', text: "Cuál es la palanca nº 4?", answer: "Xiang Zi lleva la canasta" },
   { id: 5, type: 'text', text: "Cuál es la palanca nº 5?", answer: "Proteger los hombros" },
   { id: 6, type: 'text', text: "Cuál es la palanca nº 6?", answer: "Sostener la luna entre las manos" },
   { id: 7, type: 'text', text: "Cuál es la palanca nº 7?", answer: "Doblar el codo" },
@@ -56,4 +61,20 @@ export const questions: Question[] = [
   { id: 30, type: 'text', text: "Cuál es la palanca nº 30?", answer: "Sostener la cabeza y presionar la muñeca" },
   { id: 31, type: 'text', text: "Cuál es la palanca nº 31?", answer: "Hacer un paquete con rodillas y piernas" },
   { id: 32, type: 'text', text: "Cuál es la palanca nº 32?", answer: "El dragon azul inclina la cabeza|Dragon azul inclina la cabeza" },
-]
+  
+  // Commented out multiple choice questions
+  /*
+  { 
+    id: 33, 
+    type: 'multipleChoice', 
+    text: "¿Cuál de estas opciones es la palanca nº1?", 
+    answer: "Muñeca de oro y de seda",
+  },
+  { 
+    id: 34, 
+    type: 'multipleChoice', 
+    text: "¿Cuál de estas opciones es la palanca nº6?", 
+    answer: "Sostener la luna entre las manos",
+  },
+  */
+];
