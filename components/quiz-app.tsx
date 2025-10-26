@@ -44,7 +44,7 @@ const generateMultipleChoiceOptions = (correctAnswer: string, allAnswers: string
 };
 
 export default function EnhancedQuizApp() {
-  const [quizType, setQuizType] = useState<'blanco' | 'avanzado' | null>(null);
+  const [quizType, setQuizType] = useState<'basico' | 'blanco' | 'avanzado' | null>(null);
   const [answerMode, setAnswerMode] = useState<'text' | 'multipleChoice'>('multipleChoice');
   const [shuffledQuestions, setShuffledQuestions] = useState<Question[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
@@ -98,7 +98,9 @@ export default function EnhancedQuizApp() {
       let filteredQuestions: Question[] = [];
       
       // Filter questions based on quiz type
-      if (quizType === 'blanco') {
+      if (quizType === 'basico') {
+        filteredQuestions = questions.filter(q => q.id <= 10);
+      } else if (quizType === 'blanco') {
         filteredQuestions = questions.filter(q => q.id <= 18);
       } else if (quizType === 'avanzado') {
         filteredQuestions = questions;
@@ -133,12 +135,8 @@ export default function EnhancedQuizApp() {
       const shuffled = [...filteredQuestions].sort(() => Math.random() - 0.5);
       setShuffledQuestions(shuffled);
       
-      // Set timer based on quiz type
-      if (quizType === 'blanco') {
-        setTimeRemaining(60 * 5); // 5 minutes
-      } else {
-        setTimeRemaining(60 * 10); // 10 minutes
-      }
+      // Set timer - all quiz types have 10 minutes
+      setTimeRemaining(60 * 10);
       
       startTimer();
     }
@@ -211,10 +209,15 @@ export default function EnhancedQuizApp() {
   };
 
   const handleNextQuestion = () => {
-    if (!selectedOption) return;
-    
     const currentQuestion = shuffledQuestions[currentQuestionIndex];
-    const isCorrect = isAnswerCorrect(selectedOption, currentQuestion.answer);
+    
+    // Determinar qué respuesta usar según el tipo de pregunta
+    const answerToCheck = currentQuestion.type === 'multipleChoice' ? selectedOption : userAnswer;
+    
+    // Verificar que hay una respuesta
+    if (!answerToCheck.trim()) return;
+    
+    const isCorrect = isAnswerCorrect(answerToCheck, currentQuestion.answer);
     
     if (isCorrect) {
       setScore(prevScore => prevScore + 1);
@@ -247,6 +250,7 @@ export default function EnhancedQuizApp() {
     } else {
       setCurrentQuestionIndex(prevIndex => prevIndex + 1);
       setSelectedOption('');
+      setUserAnswer('');
     }
   };
 
@@ -379,19 +383,27 @@ export default function EnhancedQuizApp() {
       <h2 className="text-xl md:text-2xl font-trajan-black uppercase mb-4 tracking-wide text-center">
         Elige el tipo de cuestionario
       </h2>
-      <div className="grid-row w-full mb-4">
-        <div className="grid-col grid-col-12 sm:grid-col-6">
+      <div className="grid-row w-full mb-4 gap-2">
+        <div className="grid-col grid-col-12 md:grid-col-4">
+          <button 
+            onClick={() => setQuizType('basico')}
+            className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-background hover:bg-secondary"
+          >
+            Básico (1-10)
+          </button>
+        </div>
+        <div className="grid-col grid-col-12 md:grid-col-4">
           <button 
             onClick={() => setQuizType('blanco')}
-            className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-background hover:bg-secondary mb-2 sm:mb-0"
+            className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-background hover:bg-secondary"
           >
             Blanco (1-18)
           </button>
         </div>
-        <div className="grid-col grid-col-12 sm:grid-col-6">
+        <div className="grid-col grid-col-12 md:grid-col-4">
           <button 
             onClick={() => setQuizType('avanzado')}
-            className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-primary text-primary-foreground hover:bg-primary/90 mb-2 sm:mb-0"
+            className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-primary text-primary-foreground hover:bg-primary/90"
           >
             Avanzado (1-32)
           </button>
@@ -568,9 +580,11 @@ export default function EnhancedQuizApp() {
       
       <p><strong>Tipos de cuestionario:</strong></p>
       <ul className="list-disc pl-5 space-y-1">
-        <li><strong>Blanco (1-18):</strong> Incluye solo las primeras 18 preguntas.</li>
+        <li><strong>Básico (1-10):</strong> Incluye solo las primeras 10 preguntas.</li>
+        <li><strong>Blanco (1-18):</strong> Incluye las primeras 18 preguntas.</li>
         <li><strong>Avanzado (1-32):</strong> Incluye todas las preguntas del 1 al 32.</li>
       </ul>
+      <p className="text-sm mt-2">Todos los cuestionarios tienen 10 minutos de duración.</p>
       
       <p className="text-xs text-muted-foreground mt-4">
         Diseñado para la Escuela Loto Blanco Lianhua - Qin-Na
