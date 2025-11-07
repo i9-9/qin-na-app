@@ -5,11 +5,12 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { useTheme } from "next-themes"
 import { questions } from './questions'
-import { Circle, Clock, HelpCircle, Award, RotateCcw, XCircle, ClipboardCheck, ArrowRight } from 'lucide-react'
+import { Circle, Clock, HelpCircle, Award, RotateCcw, XCircle, ClipboardCheck, ArrowRight, BookOpen } from 'lucide-react'
 import { MobileMenu } from "@/components/MobileMenu"
 import { motion } from "framer-motion"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import confetti from 'canvas-confetti'
+import Link from 'next/link'
 
 type Question = {
   id: number;
@@ -446,6 +447,14 @@ export default function EnhancedQuizApp() {
           </div>
         </div>
       </div>
+      
+      <Link 
+        href="/palancas"
+        className="mt-4 w-full border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary flex items-center justify-center"
+      >
+        <BookOpen className="mr-2 h-4 w-4" />
+        Ver listado de palancas
+      </Link>
       
       {previousScores.length > 0 && (
         <button 
