@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { questions } from './questions'
-import { RotateCcw, CheckCircle2, XCircle, Clock, Target, Shuffle, ArrowRight } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { RotateCcw, CheckCircle2, Clock, Target, Shuffle } from 'lucide-react'
+import { motion } from 'framer-motion'
 import confetti from 'canvas-confetti'
 
 type ExerciseType = 'fill-blanks' | 'matching' | 'find-number' | 'speed' | 'typing'
@@ -15,17 +15,10 @@ interface Palanca {
   name: string
 }
 
-interface ExerciseStats {
-  correct: number
-  incorrect: number
-  timeSpent: number
-}
-
 export function MemoryExercises({ onClose }: { onClose: () => void }) {
   const [exerciseType, setExerciseType] = useState<ExerciseType | null>(null)
   const [studyGroup, setStudyGroup] = useState<StudyGroup>('all')
   const [palancas, setPalancas] = useState<Palanca[]>([])
-  const [stats, setStats] = useState<ExerciseStats>({ correct: 0, incorrect: 0, timeSpent: 0 })
   const startTimeRef = useRef<number>(Date.now())
 
   useEffect(() => {
@@ -43,22 +36,19 @@ export function MemoryExercises({ onClose }: { onClose: () => void }) {
 
   const resetExercise = () => {
     setExerciseType(null)
-    setStats({ correct: 0, incorrect: 0, timeSpent: 0 })
     startTimeRef.current = Date.now()
   }
 
   const handleCorrect = () => {
-    setStats(prev => ({ ...prev, correct: prev.correct + 1 }))
     confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 } })
   }
 
   const handleIncorrect = () => {
-    setStats(prev => ({ ...prev, incorrect: prev.incorrect + 1 }))
+    // Track incorrect answers in individual exercises
   }
 
   const finishExercise = () => {
-    const timeSpent = Math.floor((Date.now() - startTimeRef.current) / 1000)
-    setStats(prev => ({ ...prev, timeSpent }))
+    // Exercise completion tracked in individual exercises
   }
 
   if (!exerciseType) {
@@ -549,7 +539,7 @@ function MatchingExercise({
         
         if (correctPalanca?.name === name) {
           // Correct match
-          const newMatchedPairs = new Set([...matchedPairs, `num-${selectedNum}`, `name-${name}`])
+          const newMatchedPairs = new Set([...Array.from(matchedPairs), `num-${selectedNum}`, `name-${name}`])
           setMatchedPairs(newMatchedPairs)
           setScore(prev => prev + 1)
           
@@ -754,14 +744,9 @@ function FindNumberExercise({
   const [completed, setCompleted] = useState(false)
   const [shuffled, setShuffled] = useState<Palanca[]>([])
   const [options, setOptions] = useState<number[]>([])
+  const [results, setResults] = useState<AnswerResult[]>([])
 
-  useEffect(() => {
-    const newShuffled = [...palancas].sort(() => Math.random() - 0.5)
-    setShuffled(newShuffled)
-    generateOptions(newShuffled[0])
-  }, [])
-
-  const generateOptions = (currentPalanca: Palanca) => {
+  const generateOptions = useCallback((currentPalanca: Palanca) => {
     const correctNumber = currentPalanca.number
     const wrongNumbers = palancas
       .filter(p => p.number !== correctNumber)
@@ -771,7 +756,15 @@ function FindNumberExercise({
     
     const allOptions = [correctNumber, ...wrongNumbers].sort(() => Math.random() - 0.5)
     setOptions(allOptions)
-  }
+  }, [palancas])
+
+  useEffect(() => {
+    const newShuffled = [...palancas].sort(() => Math.random() - 0.5)
+    setShuffled(newShuffled)
+    if (newShuffled.length > 0) {
+      generateOptions(newShuffled[0])
+    }
+  }, [palancas, generateOptions])
 
   const handleSelect = (num: number) => {
     if (isAnswered) return
@@ -980,10 +973,11 @@ function SpeedExercise({
   const [timeLeft, setTimeLeft] = useState(60)
   const [completed, setCompleted] = useState(false)
   const [shuffled, setShuffled] = useState<Palanca[]>([])
+  const [results, setResults] = useState<AnswerResult[]>([])
 
   useEffect(() => {
     setShuffled([...palancas].sort(() => Math.random() - 0.5))
-  }, [])
+  }, [palancas])
 
   useEffect(() => {
     if (completed || timeLeft <= 0) return
@@ -1000,6 +994,7 @@ function SpeedExercise({
     }, 1000)
 
     return () => clearInterval(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeLeft, completed])
 
   const normalizeString = (str: string) => 
@@ -1174,10 +1169,11 @@ function TypingExercise({
   const [score, setScore] = useState(0)
   const [completed, setCompleted] = useState(false)
   const [shuffled, setShuffled] = useState<Palanca[]>([])
+  const [results, setResults] = useState<AnswerResult[]>([])
 
   useEffect(() => {
     setShuffled([...palancas].sort(() => Math.random() - 0.5))
-  }, [])
+  }, [palancas])
 
   const normalizeString = (str: string) => 
     str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()

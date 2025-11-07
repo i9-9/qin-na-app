@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { questions } from './questions'
-import { ChevronLeft, ChevronRight, Shuffle, RotateCcw, Eye, EyeOff, BookOpen, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Shuffle, RotateCcw, Eye, BookOpen, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 type StudyGroup = 'basico' | 'blanco' | 'avanzado' | 'all'
