@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { useTheme } from "next-themes"
@@ -11,6 +11,7 @@ import { motion } from "framer-motion"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import confetti from 'canvas-confetti'
 import Link from 'next/link'
+import Image from 'next/image'
 
 type Question = {
   id: number;
@@ -29,6 +30,90 @@ const isAnswerCorrect = (userAnswer: string, correctAnswer: string) => {
   return correctAnswer.split('|').some(answer => normalizeString(answer) === normalizedUserAnswer);
 };
 
+// Mapping for special cases where answer doesn't match filename exactly
+const answerToFilenameMap: Record<string, string> = {
+  // ID 1: Variante sin "de" antes de "seda"
+  'Muñeca de oro y seda': 'Muñeca de oro y de seda',
+  
+  // ID 2: Variante "que corta" vs "corta"
+  'Mano que corta como cuchillo': 'Mano corta como cuchillo',
+  
+  // ID 8: Variante sin "El" al inicio
+  'Rey del cielo sostiene la torre': 'El rey del cielo sostiene la torre',
+  
+  // ID 12: Mayúsculas en "Wang"
+  'Ba wang indica la batalla': 'Ba Wang indica la batalla',
+  
+  // ID 13: Plural vs singular
+  'Palmadas en el pecho y girar el codo': 'Palmada en el pecho y girar el codo',
+  'Palmaditas en el pecho y girar el codo': 'Palmada en el pecho y girar el codo',
+  
+  // ID 14: "como" vs "de"
+  'Manos como flor de ciruelo': 'Manos de flor de ciruelo',
+  
+  // ID 16: "con" vs "a lo largo de"
+  'Girar el remo con la corriente': 'Girar el remo a lo largo de la corriente',
+  
+  // ID 19: Variante con "sostener" repetido
+  'Sostener el brazo y sostener el codo': 'Sostener el brazo y el codo',
+  
+  // ID 20: "girar" vs "llevar"
+  'Dar la vuelta y girar el codo': 'Dar la vuelta y llevar el codo',
+  
+  // ID 32: Variante sin "El" al inicio
+  'Dragon azul inclina la cabeza': 'El dragon azul inclina la cabeza',
+};
+
+// Function to normalize Unicode characters (handles both precomposed and decomposed forms)
+const normalizeUnicode = (str: string): string => {
+  // Normalize to NFD (Canonical Decomposition) to handle both ñ (U+00F1) and n+̃ (U+006E+U+0303)
+  return str.normalize('NFD');
+};
+
+// Function to map answer to image filename
+const getImageUrlFromAnswer = (answer: string): string | null => {
+  // Get the first part of the answer (before |)
+  const mainAnswer = answer.split('|')[0].trim();
+  
+  // Check if there's a special mapping
+  const mappedAnswer = answerToFilenameMap[mainAnswer] || mainAnswer;
+  
+  // Normalize Unicode to handle different encodings of special characters
+  const normalizedAnswer = normalizeUnicode(mappedAnswer);
+  
+  // Convert to filename format and add .png
+  const filename = normalizedAnswer + '.png';
+  return `/palancas/${filename}`;
+};
+
+// Function to generate image-based questions
+const generateImageQuestions = (baseQuestions: Question[]): Question[] => {
+  return baseQuestions.map(q => {
+    const imageUrl = getImageUrlFromAnswer(q.answer);
+    if (imageUrl) {
+      return {
+        ...q,
+        type: 'image' as const,
+        imageUrl: imageUrl,
+        text: `¿Cuál es esta palanca?`
+      };
+    }
+    // Si no hay imagen, mantener la pregunta pero sin número en el texto
+    return {
+      ...q,
+      text: `¿Cuál es esta palanca?`
+    };
+  });
+};
+
+// Function to get question ID by answer name
+const getQuestionIdByAnswer = (answerName: string): number | null => {
+  const question = questions.find(q => 
+    q.answer.split('|').some(a => normalizeString(a) === normalizeString(answerName))
+  );
+  return question ? question.id : null;
+};
+
 // Function to generate multiple choice options
 const generateMultipleChoiceOptions = (correctAnswer: string, allAnswers: string[], count = 4) => {
   // Get the first part if there are multiple correct answers
@@ -44,8 +129,12 @@ const generateMultipleChoiceOptions = (correctAnswer: string, allAnswers: string
   return [...wrongAnswers, mainAnswer].sort(() => Math.random() - 0.5);
 };
 
-export default function EnhancedQuizApp() {
-  const [quizType, setQuizType] = useState<'basico' | 'blanco' | 'avanzado' | null>(null);
+export interface QuizAppRef {
+  resetQuiz: () => void;
+}
+
+const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
+  const [quizType, setQuizType] = useState<'basico' | 'blanco' | 'avanzado' | 'basico-visual' | 'blanco-visual' | 'avanzado-visual' | null>(null);
   const [answerMode, setAnswerMode] = useState<'text' | 'multipleChoice'>('multipleChoice');
   const [shuffledQuestions, setShuffledQuestions] = useState<Question[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
@@ -86,6 +175,10 @@ export default function EnhancedQuizApp() {
     setStatsVisible(false);
   };
 
+  useImperativeHandle(ref, () => ({
+    resetQuiz
+  }));
+
   useEffect(() => {
     // Load previous scores on component mount
     const storedScores = localStorage.getItem('quizScores');
@@ -97,36 +190,57 @@ export default function EnhancedQuizApp() {
   useEffect(() => {
     if (quizType) {
       let filteredQuestions: Question[] = [];
+      const isVisualMode = quizType.includes('-visual');
       
       // Filter questions based on quiz type
-      if (quizType === 'basico') {
+      if (quizType === 'basico' || quizType === 'basico-visual') {
         filteredQuestions = questions.filter(q => q.id <= 10);
-      } else if (quizType === 'blanco') {
+      } else if (quizType === 'blanco' || quizType === 'blanco-visual') {
         filteredQuestions = questions.filter(q => q.id <= 18);
-      } else if (quizType === 'avanzado') {
+      } else if (quizType === 'avanzado' || quizType === 'avanzado-visual') {
         filteredQuestions = questions;
       }
       
-      // Apply answer mode if needed
-      if (answerMode === 'multipleChoice') {
+      // Convert to image questions if visual mode
+      if (isVisualMode) {
+        filteredQuestions = generateImageQuestions(filteredQuestions);
+      }
+      
+      // Apply answer mode if needed (only for non-visual quizzes)
+      if (!isVisualMode) {
+        if (answerMode === 'multipleChoice') {
+          filteredQuestions = filteredQuestions.map(q => {
+            if (q.type === 'text') {
+              const allAnswers = questions.map(q => q.answer.split('|')[0].trim());
+              return {
+                ...q,
+                type: 'multipleChoice',
+                options: generateMultipleChoiceOptions(q.answer, allAnswers)
+              };
+            }
+            return q;
+          });
+        } else if (answerMode === 'text') {
+          // If in text mode, convert multiple choice questions to text
+          filteredQuestions = filteredQuestions.map(q => {
+            if (q.type === 'multipleChoice') {
+              return {
+                ...q,
+                type: 'text'
+              };
+            }
+            return q;
+          });
+        }
+      } else {
+        // For visual mode, always use multiple choice
         filteredQuestions = filteredQuestions.map(q => {
-          if (q.type === 'text') {
+          if (q.type === 'image') {
             const allAnswers = questions.map(q => q.answer.split('|')[0].trim());
             return {
               ...q,
-              type: 'multipleChoice',
+              type: 'image',
               options: generateMultipleChoiceOptions(q.answer, allAnswers)
-            };
-          }
-          return q;
-        });
-      } else if (answerMode === 'text') {
-        // If in text mode, convert multiple choice questions to text
-        filteredQuestions = filteredQuestions.map(q => {
-          if (q.type === 'multipleChoice') {
-            return {
-              ...q,
-              type: 'text'
             };
           }
           return q;
@@ -169,6 +283,14 @@ export default function EnhancedQuizApp() {
       inputRef.current.focus();
     }
   }, [currentQuestionIndex, isAnswered, shuffledQuestions]);
+
+  const handleSubmit = () => {
+    handleNextQuestion();
+  };
+
+  const handleNext = () => {
+    handleNextQuestion();
+  };
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -213,7 +335,7 @@ export default function EnhancedQuizApp() {
     const currentQuestion = shuffledQuestions[currentQuestionIndex];
     
     // Determinar qué respuesta usar según el tipo de pregunta
-    const answerToCheck = currentQuestion.type === 'multipleChoice' ? selectedOption : userAnswer;
+    const answerToCheck = (currentQuestion.type === 'multipleChoice' || currentQuestion.type === 'image') ? selectedOption : userAnswer;
     
     // Verificar que hay una respuesta
     if (!answerToCheck.trim()) return;
@@ -266,29 +388,53 @@ export default function EnhancedQuizApp() {
     const currentQuestion = shuffledQuestions[currentQuestionIndex];
     
     return (
-      <div className="w-full h-full flex flex-col">
-        <div className="flex-grow flex flex-col p-3">
+      <div className="w-full flex flex-col">
+        <div className="flex-1 flex flex-col p-3">
           <div className="border-2 border-foreground p-3 mb-3">
             <p className="font-trajan text-lg md:text-xl">{currentQuestion.text}</p>
           </div>
           
-          {currentQuestion.type === 'multipleChoice' && currentQuestion.options && (
+          {currentQuestion.type === 'image' && currentQuestion.imageUrl && (
+            <div className="mb-4 flex justify-center items-center border-2 border-foreground p-2 bg-background">
+              <div className="relative w-full max-w-md h-auto">
+                <Image
+                  src={currentQuestion.imageUrl}
+                  alt="Palanca"
+                  width={600}
+                  height={400}
+                  className="w-full h-auto object-contain"
+                  priority
+                />
+              </div>
+            </div>
+          )}
+          
+          {(currentQuestion.type === 'multipleChoice' || currentQuestion.type === 'image') && currentQuestion.options && (
             <div className="grid-row gap-2">
-              {currentQuestion.options.map((option, index) => (
-                <div key={index} className="grid-col grid-col-12">
-                  <button
-                    className={`w-full text-left border-2 border-foreground p-2 transition-colors ${
-                      selectedOption === option ? 'bg-primary text-primary-foreground' : ''
-                    }`}
-                    onClick={() => handleAnswerSelect(option)}
-                  >
-                    <span className="inline-block w-5 h-5 mr-2 leading-5 text-center border-2 align-text-top font-trajan text-xs">
-                      {String.fromCharCode(65 + index)}
-                    </span>
-                    <span className="font-trajan">{option}</span>
-                  </button>
-                </div>
-              ))}
+              {currentQuestion.options.map((option, index) => {
+                const optionId = getQuestionIdByAnswer(option);
+                const isVisualMode = currentQuestion.type === 'image';
+                return (
+                  <div key={index} className="grid-col grid-col-12">
+                    <button
+                      className={`w-full text-left border-2 border-foreground p-2 transition-colors ${
+                        selectedOption === option ? 'bg-primary text-primary-foreground' : ''
+                      }`}
+                      onClick={() => handleAnswerSelect(option)}
+                    >
+                      <span className="inline-block w-5 h-5 mr-2 leading-5 text-center border-2 align-text-top font-trajan text-xs">
+                        {String.fromCharCode(65 + index)}
+                      </span>
+                      <span className="font-trajan">
+                        {option}
+                        {isVisualMode && optionId && (
+                          <span className="ml-2 text-sm opacity-70">(Nº {optionId})</span>
+                        )}
+                      </span>
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           )}
           
@@ -329,8 +475,8 @@ export default function EnhancedQuizApp() {
           )}
         </div>
         
-        {currentQuestion.type === 'multipleChoice' && (
-          <div className="p-2 border-t-2 border-foreground">
+        {(currentQuestion.type === 'multipleChoice' || currentQuestion.type === 'image') && (
+          <div className="p-2 border-t-2 border-foreground flex-shrink-0 bg-background sticky bottom-0">
             <button 
               className="w-full border-2 border-foreground p-2 font-trajan-bold bg-primary text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={!selectedOption}
@@ -377,114 +523,162 @@ export default function EnhancedQuizApp() {
     );
   };
 
-  const renderQuizTypeSelector = () => (
-    <div 
-      className="h-full flex flex-col items-center justify-center w-full p-4"
-    >
-      <h2 className="text-xl md:text-2xl font-trajan-black uppercase mb-4 tracking-wide text-center">
-        Elige el tipo de cuestionario
-      </h2>
-      <div className="grid-row w-full mb-4 gap-2">
-        <div className="grid-col grid-col-12 md:grid-col-4">
-          <button 
-            onClick={() => setQuizType('basico')}
-            className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-background hover:bg-secondary"
-          >
-            Básico (1-10)
-          </button>
-        </div>
-        <div className="grid-col grid-col-12 md:grid-col-4">
-          <button 
-            onClick={() => setQuizType('blanco')}
-            className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-background hover:bg-secondary"
-          >
-            Blanco (1-18)
-          </button>
-        </div>
-        <div className="grid-col grid-col-12 md:grid-col-4">
-          <button 
-            onClick={() => setQuizType('avanzado')}
-            className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-primary text-primary-foreground hover:bg-primary/90"
-          >
-            Avanzado (1-32)
-          </button>
-        </div>
-      </div>
-      
-      <div className="w-full mb-4 border-2 border-foreground p-3">
-        <h3 className="text-base font-trajan-bold mb-2 text-center">Modo de respuesta</h3>
-        
-        <div className="grid-row gap-3">
-          <div className="grid-col grid-col-6">
-            <button 
-              onClick={() => setAnswerMode('multipleChoice')}
-              className={`w-full font-trajan text-center py-2 px-2 border-2 border-foreground ${
-                answerMode === 'multipleChoice' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-secondary'
-              }`}
-            >
-              <div className="flex items-center justify-center">
-                <span className="inline-block w-4 h-4 mr-2 border-2 flex items-center justify-center">
-                  {answerMode === 'multipleChoice' && <span className="w-2 h-2 bg-primary-foreground"></span>}
-                </span>
-                Opción múltiple
-              </div>
-            </button>
-          </div>
-          <div className="grid-col grid-col-6">
-            <button 
-              onClick={() => setAnswerMode('text')}
-              className={`w-full font-trajan text-center py-2 px-2 border-2 border-foreground ${
-                answerMode === 'text' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-secondary'
-              }`}
-            >
-              <div className="flex items-center justify-center">
-                <span className="inline-block w-4 h-4 mr-2 border-2 flex items-center justify-center">
-                  {answerMode === 'text' && <span className="w-2 h-2 bg-primary-foreground"></span>}
-                </span>
-                Escribir respuesta
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      <Link 
-        href="/palancas"
-        className="mt-4 w-full border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary flex items-center justify-center"
+  const renderQuizTypeSelector = () => {
+    const isVisualMode = quizType?.includes('-visual') || false;
+    
+    return (
+      <div 
+        className="h-full flex flex-col items-center justify-center w-full p-4"
       >
-        <BookOpen className="mr-2 h-4 w-4" />
-        Ver listado de palancas
-      </Link>
-      
-      {previousScores.length > 0 && (
-        <button 
-          className="mt-2 font-trajan flex items-center justify-center group"
-          onClick={() => setStatsVisible(!statsVisible)}
-        >
-          <Award className="mr-2 h-5 w-5 group-hover:text-primary transition-colors" />
-          <span className="underline-offset-4 group-hover:underline">
-            {statsVisible ? 'Ocultar' : 'Ver'} estadísticas anteriores
-          </span>
-        </button>
-      )}
-      
-      {statsVisible && (
-        <div 
-          className="mt-2 w-full max-w-md border-2 border-foreground p-2"
-        >
-          <h3 className="text-lg font-trajan-bold mb-2 tracking-wide text-center">Resultados Anteriores</h3>
-          <div className="space-y-1 max-h-[30vh]">
-            {previousScores.slice().reverse().map((result, idx) => (
-              <div key={idx} className="flex justify-between font-mono border-b pb-1 text-sm">
-                <span>{result.date}</span>
-                <span className="font-bold">{result.score}/{result.total} ({Math.round(result.score/result.total*100)}%)</span>
-              </div>
-            ))}
+        <h2 className="text-xl md:text-2xl font-trajan-black uppercase mb-4 tracking-wide text-center">
+          Elige el tipo de cuestionario
+        </h2>
+        
+        <div className="w-full mb-4 border-2 border-foreground p-3">
+          <h3 className="text-base font-trajan-bold mb-3 text-center">Modo Texto</h3>
+          <div className="grid-row gap-2">
+            <div className="grid-col grid-col-12 md:grid-col-4">
+              <button 
+                onClick={() => setQuizType('basico')}
+                className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-background hover:bg-secondary"
+              >
+                Básico (1-10)
+              </button>
+            </div>
+            <div className="grid-col grid-col-12 md:grid-col-4">
+              <button 
+                onClick={() => setQuizType('blanco')}
+                className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-background hover:bg-secondary"
+              >
+                Blanco (1-18)
+              </button>
+            </div>
+            <div className="grid-col grid-col-12 md:grid-col-4">
+              <button 
+                onClick={() => setQuizType('avanzado')}
+                className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-background hover:bg-secondary"
+              >
+                Avanzado (1-32)
+              </button>
+            </div>
           </div>
         </div>
-      )}
-    </div>
-  );
+        
+        <div className="w-full mb-4 border-2 border-foreground p-3">
+          <h3 className="text-base font-trajan-bold mb-3 text-center">Modo Visual</h3>
+          <div className="grid-row gap-2">
+            <div className="grid-col grid-col-12 md:grid-col-4">
+              <button 
+                onClick={() => setQuizType('basico-visual')}
+                className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                Básico Visual (1-10)
+              </button>
+            </div>
+            <div className="grid-col grid-col-12 md:grid-col-4">
+              <button 
+                onClick={() => setQuizType('blanco-visual')}
+                className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                Blanco Visual (1-18)
+              </button>
+            </div>
+            <div className="grid-col grid-col-12 md:grid-col-4">
+              <button 
+                onClick={() => setQuizType('avanzado-visual')}
+                className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                Avanzado Visual (1-32)
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        {!isVisualMode && quizType && (
+          <div className="w-full mb-4 border-2 border-foreground p-3">
+            <h3 className="text-base font-trajan-bold mb-2 text-center">Modo de respuesta</h3>
+            
+            <div className="grid-row gap-3">
+              <div className="grid-col grid-col-6">
+                <button 
+                  onClick={() => setAnswerMode('multipleChoice')}
+                  className={`w-full font-trajan text-center py-2 px-2 border-2 border-foreground ${
+                    answerMode === 'multipleChoice' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-secondary'
+                  }`}
+                >
+                  <div className="flex items-center justify-center">
+                    <span className="inline-block w-4 h-4 mr-2 border-2 flex items-center justify-center">
+                      {answerMode === 'multipleChoice' && <span className="w-2 h-2 bg-primary-foreground"></span>}
+                    </span>
+                    Opción múltiple
+                  </div>
+                </button>
+              </div>
+              <div className="grid-col grid-col-6">
+                <button 
+                  onClick={() => setAnswerMode('text')}
+                  className={`w-full font-trajan text-center py-2 px-2 border-2 border-foreground ${
+                    answerMode === 'text' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-secondary'
+                  }`}
+                >
+                  <div className="flex items-center justify-center">
+                    <span className="inline-block w-4 h-4 mr-2 border-2 flex items-center justify-center">
+                      {answerMode === 'text' && <span className="w-2 h-2 bg-primary-foreground"></span>}
+                    </span>
+                    Escribir respuesta
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {isVisualMode && (
+          <div className="w-full mb-4 border-2 border-foreground p-3">
+            <p className="text-sm font-trajan text-center text-muted-foreground">
+              En el modo visual, se mostrarán imágenes de las palancas y deberás identificar su nombre.
+            </p>
+          </div>
+        )}
+        
+        <Link 
+          href="/palancas"
+          className="mt-4 w-full border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary flex items-center justify-center"
+        >
+          <BookOpen className="mr-2 h-4 w-4" />
+          Ver listado de palancas
+        </Link>
+        
+        {previousScores.length > 0 && (
+          <button 
+            className="mt-2 font-trajan flex items-center justify-center group"
+            onClick={() => setStatsVisible(!statsVisible)}
+          >
+            <Award className="mr-2 h-5 w-5 group-hover:text-primary transition-colors" />
+            <span className="underline-offset-4 group-hover:underline">
+              {statsVisible ? 'Ocultar' : 'Ver'} estadísticas anteriores
+            </span>
+          </button>
+        )}
+        
+        {statsVisible && (
+          <div 
+            className="mt-2 w-full max-w-md border-2 border-foreground p-2"
+          >
+            <h3 className="text-lg font-trajan-bold mb-2 tracking-wide text-center">Resultados Anteriores</h3>
+            <div className="space-y-1 max-h-[30vh]">
+              {previousScores.slice().reverse().map((result, idx) => (
+                <div key={idx} className="flex justify-between font-mono border-b pb-1 text-sm">
+                  <span>{result.date}</span>
+                  <span className="font-bold">{result.score}/{result.total} ({Math.round(result.score/result.total*100)}%)</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const renderResults = () => (
     <div className="text-center w-full mx-auto h-full">
@@ -592,6 +786,9 @@ export default function EnhancedQuizApp() {
         <li><strong>Básico (1-10):</strong> Incluye solo las primeras 10 preguntas.</li>
         <li><strong>Blanco (1-18):</strong> Incluye las primeras 18 preguntas.</li>
         <li><strong>Avanzado (1-32):</strong> Incluye todas las preguntas del 1 al 32.</li>
+        <li><strong>Básico Visual (1-10):</strong> Muestra imágenes de las primeras 10 palancas.</li>
+        <li><strong>Blanco Visual (1-18):</strong> Muestra imágenes de las primeras 18 palancas.</li>
+        <li><strong>Avanzado Visual (1-32):</strong> Muestra imágenes de todas las palancas.</li>
       </ul>
       <p className="text-sm mt-2">Todos los cuestionarios tienen 10 minutos de duración.</p>
       
@@ -600,14 +797,6 @@ export default function EnhancedQuizApp() {
       </p>
     </div>
   );
-
-  const handleSubmit = () => {
-    handleNextQuestion();
-  };
-
-  const handleNext = () => {
-    handleNextQuestion();
-  };
 
   if (!quizType) {
     return renderQuizTypeSelector();
@@ -618,7 +807,7 @@ export default function EnhancedQuizApp() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-background text-foreground overflow-hidden border-0">
+    <div className="h-full flex flex-col bg-background text-foreground border-0">
       <header className="flex justify-between items-center py-2 px-3 border-b-2 border-foreground flex-shrink-0">
         <div className="flex flex-row items-center space-x-3">
           <MobileMenu resetQuiz={resetQuiz} />
@@ -638,7 +827,7 @@ export default function EnhancedQuizApp() {
           <div className={`flex items-center ${timeRemaining < 60 ? 'text-red-500' : ''}`}>
             <Clock className="h-4 w-4 mr-1" />
             <span className={`font-mono text-sm ${isPaused ? 'opacity-50' : ''}`}>
-              {formatTime(timeRemaining)}
+              {formatTime(timeRemaining as number)}
             </span>
             <button 
               className="ml-1 h-7 w-7 flex items-center justify-center hover:bg-secondary" 
@@ -666,38 +855,40 @@ export default function EnhancedQuizApp() {
         </SheetContent>
       </Sheet>
       
-      <div className="flex-grow flex justify-center items-stretch p-0">
-        <div className="w-full h-full flex flex-col border-0">
-          {!quizCompleted ? (
-            <div className="flex flex-col h-full">
-              <div className="border-b-2 border-foreground pb-1 pt-1 flex-shrink-0">
-                <div className="flex justify-between items-center px-3">
-                  <p className="text-xs md:text-sm font-mono">
-                    Pregunta {currentQuestionIndex + 1} de {shuffledQuestions.length}
-                  </p>
-                  <p className="text-xs md:text-sm font-trajan-bold">
-                    Puntuación: {score}/{currentQuestionIndex + (isAnswered ? 1 : 0)}
-                  </p>
-                </div>
-                <div className="relative h-2 bg-muted overflow-hidden w-full mt-1">
-                  <div 
-                    className="absolute top-0 left-0 h-full bg-primary transition-all" 
-                    style={{ width: `${(currentQuestionIndex + (isAnswered ? 1 : 0)) / shuffledQuestions.length * 100}%` }} 
-                  />
-                </div>
+      <div className="flex-1 flex flex-col min-h-0">
+        {!quizCompleted ? (
+          <div className="flex flex-col h-full min-h-0">
+            <div className="border-b-2 border-foreground pb-1 pt-1 flex-shrink-0">
+              <div className="flex justify-between items-center px-3">
+                <p className="text-xs md:text-sm font-mono">
+                  Pregunta {currentQuestionIndex + 1} de {shuffledQuestions.length}
+                </p>
+                <p className="text-xs md:text-sm font-trajan-bold">
+                  Puntuación: {score}/{currentQuestionIndex + (isAnswered ? 1 : 0)}
+                </p>
               </div>
-              <div className="flex-grow flex flex-col p-0">
-                {renderQuestion()}
-                {renderFeedback()}
+              <div className="relative h-2 bg-muted overflow-hidden w-full mt-1">
+                <div 
+                  className="absolute top-0 left-0 h-full bg-primary transition-all" 
+                  style={{ width: `${(currentQuestionIndex + (isAnswered ? 1 : 0)) / shuffledQuestions.length * 100}%` }} 
+                />
               </div>
             </div>
-          ) : (
-            <div className="h-full p-2">
-              {renderResults()}
+            <div className="flex-1 overflow-y-auto min-h-0">
+              {renderQuestion()}
+              {renderFeedback()}
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="flex-1 overflow-y-auto min-h-0 p-2">
+            {renderResults()}
+          </div>
+        )}
       </div>
     </div>
   )
-}
+});
+
+EnhancedQuizApp.displayName = 'EnhancedQuizApp';
+
+export default EnhancedQuizApp;

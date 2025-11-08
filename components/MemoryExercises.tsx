@@ -2,17 +2,48 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { questions } from './questions'
-import { RotateCcw, CheckCircle2, Clock, Target, Shuffle } from 'lucide-react'
+import { RotateCcw, CheckCircle2, Clock, Target, Shuffle, Image as ImageIcon } from 'lucide-react'
 import { motion } from 'framer-motion'
 import confetti from 'canvas-confetti'
+import Image from 'next/image'
 
-type ExerciseType = 'fill-blanks' | 'matching' | 'find-number' | 'speed' | 'typing'
+type ExerciseType = 'fill-blanks' | 'matching' | 'find-number' | 'speed' | 'typing' | 'image-memory'
 type StudyGroup = 'basico' | 'blanco' | 'avanzado' | 'all'
 
 interface Palanca {
   id: number
   number: number
   name: string
+  imageUrl?: string
+}
+
+// Mapping for special cases where answer doesn't match filename exactly
+const answerToFilenameMap: Record<string, string> = {
+  'Muñeca de oro y seda': 'Muñeca de oro y de seda',
+  'Mano que corta como cuchillo': 'Mano corta como cuchillo',
+  'Rey del cielo sostiene la torre': 'El rey del cielo sostiene la torre',
+  'Ba wang indica la batalla': 'Ba Wang indica la batalla',
+  'Palmadas en el pecho y girar el codo': 'Palmada en el pecho y girar el codo',
+  'Palmaditas en el pecho y girar el codo': 'Palmada en el pecho y girar el codo',
+  'Manos como flor de ciruelo': 'Manos de flor de ciruelo',
+  'Girar el remo con la corriente': 'Girar el remo a lo largo de la corriente',
+  'Sostener el brazo y sostener el codo': 'Sostener el brazo y el codo',
+  'Dar la vuelta y girar el codo': 'Dar la vuelta y llevar el codo',
+  'Dragon azul inclina la cabeza': 'El dragon azul inclina la cabeza',
+}
+
+// Function to normalize Unicode characters
+const normalizeUnicode = (str: string): string => {
+  return str.normalize('NFD')
+}
+
+// Function to map answer to image filename
+const getImageUrlFromAnswer = (answer: string): string | null => {
+  const mainAnswer = answer.split('|')[0].trim()
+  const mappedAnswer = answerToFilenameMap[mainAnswer] || mainAnswer
+  const normalizedAnswer = normalizeUnicode(mappedAnswer)
+  const filename = normalizedAnswer + '.png'
+  return `/palancas/${filename}`
 }
 
 export function MemoryExercises({ onClose }: { onClose: () => void }) {
@@ -27,11 +58,15 @@ export function MemoryExercises({ onClose }: { onClose: () => void }) {
     else if (studyGroup === 'blanco') filtered = questions.filter(q => q.id <= 18)
     else if (studyGroup === 'avanzado') filtered = questions
 
-    setPalancas(filtered.map(q => ({
-      id: q.id,
-      number: q.id,
-      name: q.answer.split('|')[0].trim()
-    })))
+    setPalancas(filtered.map(q => {
+      const imageUrl = getImageUrlFromAnswer(q.answer)
+      return {
+        id: q.id,
+        number: q.id,
+        name: q.answer.split('|')[0].trim(),
+        imageUrl: imageUrl || undefined
+      }
+    }).filter(p => p.imageUrl)) // Solo incluir palancas que tienen imagen
   }, [studyGroup])
 
   const resetExercise = () => {
@@ -191,6 +226,25 @@ export function MemoryExercises({ onClose }: { onClose: () => void }) {
                 </p>
               </button>
             </div>
+
+            {/* Image Memory Exercise */}
+            <div className="grid-col grid-col-12 md:grid-col-6">
+              <button
+                onClick={() => {
+                  setExerciseType('image-memory')
+                  startTimeRef.current = Date.now()
+                }}
+                className="w-full border-2 border-foreground p-4 hover:bg-secondary transition-colors text-left h-full"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <ImageIcon className="h-5 w-5" />
+                  <h3 className="font-trajan-bold text-lg">Memoria Visual</h3>
+                </div>
+                <p className="text-sm font-trajan text-muted-foreground">
+                  Memoriza la imagen y luego identifica la palanca
+                </p>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -246,6 +300,15 @@ export function MemoryExercises({ onClose }: { onClose: () => void }) {
       )}
       {exerciseType === 'typing' && (
         <TypingExercise
+          palancas={palancas}
+          onCorrect={handleCorrect}
+          onIncorrect={handleIncorrect}
+          onFinish={finishExercise}
+          onReset={resetExercise}
+        />
+      )}
+      {exerciseType === 'image-memory' && (
+        <ImageMemoryExercise
           palancas={palancas}
           onCorrect={handleCorrect}
           onIncorrect={handleIncorrect}
@@ -1330,6 +1393,325 @@ function TypingExercise({
             </div>
           )}
         </div>
+      </div>
+
+      <div className="border-t-2 border-foreground pt-3 mt-4 flex gap-2 flex-shrink-0">
+        <button
+          onClick={onReset}
+          className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary"
+        >
+          <RotateCcw className="h-4 w-4 inline mr-1" />
+          Salir
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// Image Memory Exercise Component
+function ImageMemoryExercise({
+  palancas,
+  onCorrect,
+  onIncorrect,
+  onFinish,
+  onReset
+}: {
+  palancas: Palanca[]
+  onCorrect: () => void
+  onIncorrect: () => void
+  onFinish: () => void
+  onReset: () => void
+}) {
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [selectedOption, setSelectedOption] = useState<string | null>(null)
+  const [isAnswered, setIsAnswered] = useState(false)
+  const [score, setScore] = useState(0)
+  const [completed, setCompleted] = useState(false)
+  const [shuffled, setShuffled] = useState<Palanca[]>([])
+  const [options, setOptions] = useState<string[]>([])
+  const [results, setResults] = useState<AnswerResult[]>([])
+  const [showImage, setShowImage] = useState(true)
+  const [timeRemaining, setTimeRemaining] = useState(5) // 5 segundos para memorizar
+
+  const normalizeString = (str: string) => 
+    str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()
+
+  const generateOptions = useCallback((currentPalanca: Palanca) => {
+    const correctName = currentPalanca.name
+    const wrongNames = palancas
+      .filter(p => p.name !== correctName)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3)
+      .map(p => p.name)
+    
+    const allOptions = [correctName, ...wrongNames].sort(() => Math.random() - 0.5)
+    setOptions(allOptions)
+  }, [palancas])
+
+  useEffect(() => {
+    const newShuffled = palancas.filter(p => p.imageUrl).sort(() => Math.random() - 0.5)
+    setShuffled(newShuffled)
+    if (newShuffled.length > 0) {
+      generateOptions(newShuffled[0])
+      setShowImage(true)
+      setTimeRemaining(5)
+    }
+  }, [palancas, generateOptions])
+
+  // Timer para ocultar la imagen después de 5 segundos
+  useEffect(() => {
+    if (!showImage || completed) return
+
+    const timer = setInterval(() => {
+      setTimeRemaining(prev => {
+        if (prev <= 1) {
+          setShowImage(false)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [showImage, completed])
+
+  const handleSelect = (name: string) => {
+    if (isAnswered || showImage) return
+    setSelectedOption(name)
+  }
+
+  const handleSubmit = () => {
+    if (selectedOption === null || showImage) return
+
+    const current = shuffled[currentIndex]
+    const isCorrect = normalizeString(selectedOption) === normalizeString(current.name)
+
+    // Guardar resultado
+    const result: AnswerResult = {
+      palancaNumber: current.number,
+      palancaName: current.name,
+      userAnswer: selectedOption,
+      correctAnswer: current.name,
+      isCorrect
+    }
+    setResults(prev => [...prev, result])
+
+    if (isCorrect) {
+      setScore(prev => prev + 1)
+      onCorrect()
+    } else {
+      onIncorrect()
+    }
+
+    setIsAnswered(true)
+
+    setTimeout(() => {
+      if (currentIndex < shuffled.length - 1) {
+        const nextIndex = currentIndex + 1
+        setCurrentIndex(nextIndex)
+        setSelectedOption(null)
+        setIsAnswered(false)
+        setShowImage(true)
+        setTimeRemaining(5)
+        generateOptions(shuffled[nextIndex])
+      } else {
+        setCompleted(true)
+        onFinish()
+      }
+    }, 2000)
+  }
+
+  // Función para obtener el ID de una palanca por su nombre
+  const getQuestionIdByAnswer = (answerName: string): number | null => {
+    const question = questions.find(q => 
+      q.answer.split('|').some(a => normalizeString(a) === normalizeString(answerName))
+    )
+    return question ? question.id : null
+  }
+
+  if (completed) {
+    const percentage = Math.round((score / shuffled.length) * 100)
+    const incorrectResults = results.filter(r => !r.isCorrect)
+    
+    return (
+      <div className="flex-grow flex flex-col p-4 overflow-hidden">
+        <div className="text-center border-2 border-foreground p-4 mb-4 flex-shrink-0">
+          <h2 className="text-xl md:text-2xl font-trajan-black uppercase mb-2">¡Ejercicio Completado!</h2>
+          <div className="text-3xl md:text-4xl font-trajan-black mb-2">{percentage}%</div>
+          <p className="font-trajan mb-2">{score} de {shuffled.length} correctas</p>
+        </div>
+
+        {incorrectResults.length > 0 && (
+          <div className="flex-1 overflow-y-auto border-2 border-foreground p-4 mb-4 min-h-0">
+            <h3 className="font-trajan-bold text-lg mb-3 text-center border-b-2 border-foreground pb-2">
+              Respuestas Incorrectas ({incorrectResults.length})
+            </h3>
+            <div className="space-y-3">
+              {incorrectResults.map((result, idx) => (
+                <div key={idx} className="border-2 border-foreground p-3 bg-red-50 dark:bg-red-900/20">
+                  <div className="flex items-start gap-2 mb-2">
+                    <span className="font-trajan-bold text-sm min-w-[3rem]">#{result.palancaNumber}</span>
+                    <p className="font-trajan text-sm flex-1">{result.palancaName}</p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <span className="font-trajan-bold text-red-600">Tu respuesta:</span>
+                      <p className="font-mono">{result.userAnswer}</p>
+                    </div>
+                    <div>
+                      <span className="font-trajan-bold text-green-600">Correcta:</span>
+                      <p className="font-mono">{result.correctAnswer}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="flex gap-2 flex-shrink-0">
+          <button
+            onClick={onReset}
+            className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-primary text-primary-foreground"
+          >
+            Nuevo Ejercicio
+          </button>
+          <button
+            onClick={() => {
+              const newShuffled = palancas.filter(p => p.imageUrl).sort(() => Math.random() - 0.5)
+              setShuffled(newShuffled)
+              setCurrentIndex(0)
+              setScore(0)
+              setCompleted(false)
+              setSelectedOption(null)
+              setIsAnswered(false)
+              setResults([])
+              setShowImage(true)
+              setTimeRemaining(5)
+              if (newShuffled.length > 0) {
+                generateOptions(newShuffled[0])
+              }
+            }}
+            className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary"
+          >
+            Repetir
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const currentPalanca = shuffled[currentIndex]
+
+  if (!currentPalanca) {
+    return (
+      <div className="flex-grow flex items-center justify-center">
+        <p className="font-trajan">No hay palancas con imágenes disponibles</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex-grow flex flex-col p-4 overflow-hidden">
+      <div className="mb-4 flex items-center justify-between flex-shrink-0">
+        <div className="text-sm font-mono">
+          {currentIndex + 1} / {shuffled.length}
+        </div>
+        <div className="text-sm font-trajan-bold">
+          Puntuación: {score}
+        </div>
+      </div>
+
+      <div className="flex-grow flex flex-col items-center justify-center min-h-0">
+        {showImage ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="w-full max-w-2xl border-2 border-foreground p-6 text-center"
+          >
+            <div className="mb-4">
+              <p className="font-trajan-bold text-lg mb-2">Memoriza esta imagen</p>
+              <div className="text-3xl font-trajan-black mb-4">{timeRemaining}</div>
+            </div>
+            <div className="relative w-full max-w-md h-auto mx-auto border-2 border-foreground p-2 bg-background">
+              <Image
+                src={currentPalanca.imageUrl!}
+                alt="Palanca"
+                width={600}
+                height={400}
+                className="w-full h-auto object-contain"
+                priority
+              />
+            </div>
+          </motion.div>
+        ) : (
+          <div className="w-full max-w-2xl border-2 border-foreground p-6 text-center">
+            <div className="mb-6">
+              <p className="font-trajan-bold text-xl mb-4">¿Qué palanca era?</p>
+              <div className="h-32 border-2 border-foreground bg-muted flex items-center justify-center">
+                <p className="font-trajan text-muted-foreground">Imagen oculta</p>
+              </div>
+            </div>
+
+            {isAnswered && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-4"
+              >
+                <p className={`font-trajan-bold text-lg mb-2 ${
+                  selectedOption && normalizeString(selectedOption) === normalizeString(currentPalanca.name)
+                    ? 'text-green-600' : 'text-red-600'
+                }`}>
+                  {selectedOption && normalizeString(selectedOption) === normalizeString(currentPalanca.name)
+                    ? '¡Correcto!' : 'Incorrecto'}
+                </p>
+                <p className="font-trajan text-sm">La respuesta correcta es: {currentPalanca.name} (Nº {currentPalanca.number})</p>
+              </motion.div>
+            )}
+
+            {!isAnswered && (
+              <>
+                <div className="grid-row gap-2 mb-4">
+                  {options.map((option, index) => {
+                    const optionId = getQuestionIdByAnswer(option)
+                    return (
+                      <div key={index} className="grid-col grid-col-12">
+                        <button
+                          onClick={() => handleSelect(option)}
+                          className={`w-full text-left border-2 border-foreground p-3 transition-colors ${
+                            selectedOption === option
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-background hover:bg-secondary'
+                          }`}
+                        >
+                          <span className="inline-block w-5 h-5 mr-2 leading-5 text-center border-2 align-text-top font-trajan text-xs">
+                            {String.fromCharCode(65 + index)}
+                          </span>
+                          <span className="font-trajan">
+                            {option}
+                            {optionId && (
+                              <span className="ml-2 text-sm opacity-70">(Nº {optionId})</span>
+                            )}
+                          </span>
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {selectedOption && (
+                  <button
+                    onClick={handleSubmit}
+                    className="w-full border-2 border-foreground p-2 font-trajan-bold bg-primary text-primary-foreground"
+                  >
+                    Verificar
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="border-t-2 border-foreground pt-3 mt-4 flex gap-2 flex-shrink-0">
