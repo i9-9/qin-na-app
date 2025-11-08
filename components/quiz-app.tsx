@@ -66,8 +66,9 @@ const answerToFilenameMap: Record<string, string> = {
 
 // Function to normalize Unicode characters (handles both precomposed and decomposed forms)
 const normalizeUnicode = (str: string): string => {
-  // Normalize to NFD (Canonical Decomposition) to handle both ñ (U+00F1) and n+̃ (U+006E+U+0303)
-  return str.normalize('NFD');
+  // Normalize to NFC (Canonical Composition) which is the standard form for filenames
+  // This ensures ñ stays as ñ (U+00F1) instead of being decomposed to n+̃ (U+006E+U+0303)
+  return str.normalize('NFC');
 };
 
 // Function to map answer to image filename
@@ -78,11 +79,15 @@ const getImageUrlFromAnswer = (answer: string): string | null => {
   // Check if there's a special mapping
   const mappedAnswer = answerToFilenameMap[mainAnswer] || mainAnswer;
   
-  // Normalize Unicode to handle different encodings of special characters
+  // Normalize Unicode to NFC (Canonical Composition) which matches standard filename encoding
+  // This ensures ñ stays as ñ instead of being decomposed
   const normalizedAnswer = normalizeUnicode(mappedAnswer);
   
   // Convert to filename format and add .png
   const filename = normalizedAnswer + '.png';
+  
+  // Return the path - Next.js Image component handles URL encoding automatically
+  // For Vercel, spaces and special characters in filenames work when properly normalized
   return `/palancas/${filename}`;
 };
 

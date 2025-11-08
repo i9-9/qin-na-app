@@ -33,8 +33,10 @@ const answerToFilenameMap: Record<string, string> = {
 }
 
 // Function to normalize Unicode characters
+// Use NFC (Canonical Composition) which is the standard form for filenames
+// This ensures ñ stays as ñ (U+00F1) instead of being decomposed to n+̃ (U+006E+U+0303)
 const normalizeUnicode = (str: string): string => {
-  return str.normalize('NFD')
+  return str.normalize('NFC')
 }
 
 // Function to map answer to image filename
@@ -43,6 +45,7 @@ const getImageUrlFromAnswer = (answer: string): string | null => {
   const mappedAnswer = answerToFilenameMap[mainAnswer] || mainAnswer
   const normalizedAnswer = normalizeUnicode(mappedAnswer)
   const filename = normalizedAnswer + '.png'
+  // Next.js Image component handles URL encoding automatically
   return `/palancas/${filename}`
 }
 
