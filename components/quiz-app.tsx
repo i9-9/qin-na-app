@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
+import { useState, useEffect, useRef, forwardRef, useImperativeHandle, useCallback } from 'react'
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { useTheme } from "next-themes"
@@ -187,6 +187,27 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
     }
   }, []);
 
+  const startTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    
+    timerRef.current = setInterval(() => {
+      if (!isPaused) {
+        setTimeRemaining(prev => {
+          if (prev === null || prev <= 0) {
+            if (timerRef.current) clearInterval(timerRef.current);
+            setQuizCompleted(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }
+    }, 1000);
+    
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [isPaused]);
+
   useEffect(() => {
     if (quizType) {
       let filteredQuestions: Question[] = [];
@@ -255,28 +276,7 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
       
       startTimer();
     }
-  }, [quizType, answerMode]);
-
-  const startTimer = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    
-    timerRef.current = setInterval(() => {
-      if (!isPaused) {
-        setTimeRemaining(prev => {
-          if (prev === null || prev <= 0) {
-            if (timerRef.current) clearInterval(timerRef.current);
-            setQuizCompleted(true);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }
-    }, 1000);
-    
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  };
+  }, [quizType, answerMode, startTimer]);
 
   useEffect(() => {
     if (inputRef.current && !isAnswered && shuffledQuestions[currentQuestionIndex]?.type === 'text') {
@@ -284,54 +284,7 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
     }
   }, [currentQuestionIndex, isAnswered, shuffledQuestions]);
 
-  const handleSubmit = () => {
-    handleNextQuestion();
-  };
-
-  const handleNext = () => {
-    handleNextQuestion();
-  };
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (isAnswered) {
-      timer = setTimeout(() => {
-        handleNext();
-      }, 2500);
-    }
-    return () => clearTimeout(timer);
-  }, [isAnswered]);
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !isAnswered) {
-      handleSubmit();
-    }
-  };
-
-  // Global keyboard handler
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Skip when in input field or quiz completed
-      if (document.activeElement?.tagName === 'INPUT' || quizCompleted) return;
-      
-      if (e.key === '?' && !isAnswered) {
-        setHelpModalOpen(true);
-      } else if (e.key === 'n' && isAnswered) {
-        handleNext();
-      } else if (e.key === 'p' && !isAnswered) {
-        setIsPaused(prev => !prev);
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isAnswered, quizCompleted]);
-
-  const handleAnswerSelect = (option: string) => {
-    setSelectedOption(option);
-  };
-
-  const handleNextQuestion = () => {
+  const handleNextQuestion = useCallback(() => {
     const currentQuestion = shuffledQuestions[currentQuestionIndex];
     
     // Determinar qué respuesta usar según el tipo de pregunta
@@ -375,6 +328,53 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
       setSelectedOption('');
       setUserAnswer('');
     }
+  }, [shuffledQuestions, currentQuestionIndex, selectedOption, userAnswer, score, previousScores]);
+
+  const handleSubmit = () => {
+    handleNextQuestion();
+  };
+
+  const handleNext = useCallback(() => {
+    handleNextQuestion();
+  }, [handleNextQuestion]);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isAnswered) {
+      timer = setTimeout(() => {
+        handleNext();
+      }, 2500);
+    }
+    return () => clearTimeout(timer);
+  }, [isAnswered, handleNext]);
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !isAnswered) {
+      handleSubmit();
+    }
+  };
+
+  // Global keyboard handler
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Skip when in input field or quiz completed
+      if (document.activeElement?.tagName === 'INPUT' || quizCompleted) return;
+      
+      if (e.key === '?' && !isAnswered) {
+        setHelpModalOpen(true);
+      } else if (e.key === 'n' && isAnswered) {
+        handleNext();
+      } else if (e.key === 'p' && !isAnswered) {
+        setIsPaused(prev => !prev);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isAnswered, quizCompleted, handleNext]);
+
+  const handleAnswerSelect = (option: string) => {
+    setSelectedOption(option);
   };
 
   const formatTime = (seconds: number | null) => {

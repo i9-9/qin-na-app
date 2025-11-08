@@ -2,7 +2,6 @@
 
 import Image from 'next/image'
 import QuizApp from '../components/quiz-app'
-import Link from 'next/link'
 import { useRef } from 'react'
 
 export default function Home() {
