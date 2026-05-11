@@ -1,0 +1,230 @@
+/**
+ * Swiss UX — variables de diseño (International Typographic Style)
+ *
+ * Principios traducidos a tokens:
+ * - márgenes de página como módulo maestro; ritmo = múltiplos del margen o de su
+ *   fracción fija del margen (margen ÷ 3 — la micro-unidad escala con el margen)
+ * - escala tipográfica modular por proporción áurea (φ); cuerpo en 1rem con
+ *   pisos de legibilidad en tamaños auxiliares
+ * - jerarquía clara, sans neutra; contraste alto, plano, preciso
+ *
+ * Uso: utilidades arbitrarias de Tailwind, por ejemplo
+ *   className="p-[length:var(--swiss-space-6)] text-[length:var(--swiss-text-lg)]"
+ * o mapeá estas variables en tailwind.config.ts si querés atajos tipo p-swiss-6.
+ */
+
+:root {
+  /* --- Módulo de margen (eje del layout; todo el espaciado macro responde a esto) --- */
+  --swiss-margin-page: 1rem; /* ~16px — más ajustado; gutter = mismo módulo */
+
+  /* --- Rejilla fina: ⅓ del margen (3 unidades = 1 margen; 6 unidades = 2 márgenes, etc.) --- */
+  --swiss-unit: calc(var(--swiss-margin-page) / 3);
+
+  /* --- Proporción áurea (divina proporción) — escala tipográfica y armonías --- */
+  --swiss-phi: 1.618033988749895;
+  /* 1/φ = φ − 1; evita errores de redondeo en escalas hacia abajo */
+  --swiss-phi-inv: 0.6180339887498949;
+  /* √φ — paso intermedio “suizo” entre cuerpo y el siguiente salto φ */
+  --swiss-phi-sqrt: 1.2720196499140347;
+
+  /* --- Espaciado (múltiplos de --swiss-unit ⇒ múltiplos racionales del margen) --- */
+  --swiss-space-0: 0;
+  --swiss-space-px: 1px;
+  --swiss-space-1: calc(var(--swiss-unit) * 0.5); /* margen ÷ 6 */
+  --swiss-space-2: calc(var(--swiss-unit) * 1); /* margen ÷ 3 */
+  --swiss-space-3: calc(var(--swiss-unit) * 1.5); /* margen ÷ 2 */
+  --swiss-space-4: calc(var(--swiss-unit) * 2); /* ⅔ margen */
+  --swiss-space-5: calc(var(--swiss-unit) * 2.5);
+  --swiss-space-6: calc(var(--swiss-unit) * 3); /* 1× margen */
+  --swiss-space-8: calc(var(--swiss-unit) * 4);
+  --swiss-space-10: calc(var(--swiss-unit) * 5);
+  --swiss-space-12: calc(var(--swiss-unit) * 6); /* 2× margen */
+  --swiss-space-16: calc(var(--swiss-unit) * 8);
+  --swiss-space-20: calc(var(--swiss-unit) * 10);
+  --swiss-space-24: calc(var(--swiss-unit) * 12); /* 4× margen */
+  --swiss-space-32: calc(var(--swiss-unit) * 16);
+
+  /* --- Tipografía: escala modular φ (rem = zoom del usuario) --- */
+  /* Pisos mínimos donde φ daría menos de ~12px; el resto sigue potencias exactas. */
+  --swiss-text-2xs: max(
+    0.6875rem,
+    calc(1rem * var(--swiss-phi-inv) * var(--swiss-phi-inv) * var(--swiss-phi-inv))
+  );
+  --swiss-text-xs: max(
+    0.75rem,
+    calc(1rem * var(--swiss-phi-inv) * var(--swiss-phi-inv))
+  );
+  --swiss-text-sm: max(
+    0.875rem,
+    calc(1rem * var(--swiss-phi-inv))
+  );
+  --swiss-text-base: 1rem; /* cuerpo — ancla φ⁰ */
+  --swiss-text-md: calc(1rem * var(--swiss-phi-sqrt));
+  --swiss-text-lg: calc(1rem * var(--swiss-phi));
+  --swiss-text-xl: calc(1rem * var(--swiss-phi) * var(--swiss-phi));
+  --swiss-text-2xl: calc(1rem * var(--swiss-phi) * var(--swiss-phi) * var(--swiss-phi));
+  --swiss-text-3xl: calc(
+    1rem * var(--swiss-phi) * var(--swiss-phi) * var(--swiss-phi) * var(--swiss-phi)
+  );
+  --swiss-text-4xl: calc(
+    1rem * var(--swiss-phi) * var(--swiss-phi) * var(--swiss-phi) * var(--swiss-phi) *
+      var(--swiss-phi)
+  );
+  --swiss-text-5xl: calc(
+    1rem * var(--swiss-phi) * var(--swiss-phi) * var(--swiss-phi) * var(--swiss-phi) *
+      var(--swiss-phi) * var(--swiss-phi)
+  );
+  /* Display fluido: anclado entre φ⁴ y φ⁶ para posters / héroes suizos */
+  --swiss-text-display: clamp(
+    calc(1rem * var(--swiss-phi) * var(--swiss-phi) * var(--swiss-phi) * var(--swiss-phi)),
+    4vw + 1rem,
+    calc(
+      1rem * var(--swiss-phi) * var(--swiss-phi) * var(--swiss-phi) * var(--swiss-phi) *
+        var(--swiss-phi) * var(--swiss-phi)
+    )
+  );
+  /* Alineado con KUNG FU brief —text-hero */
+  --swiss-text-hero: clamp(
+    calc(
+      1rem * var(--swiss-phi) * var(--swiss-phi) * var(--swiss-phi) * var(--swiss-phi) *
+        var(--swiss-phi)
+    ),
+    6vw + 1rem,
+    calc(
+      1rem * var(--swiss-phi) * var(--swiss-phi) * var(--swiss-phi) * var(--swiss-phi) *
+        var(--swiss-phi) * var(--swiss-phi) * var(--swiss-phi)
+    )
+  );
+
+  /* Interlineado: titulares apretados, lectura larga más aire */
+  --swiss-leading-none: 1;
+  --swiss-leading-tight: 1.1;
+  --swiss-leading-snug: 1.25;
+  --swiss-leading-normal: 1.5;
+  --swiss-leading-relaxed: 1.625;
+  --swiss-leading-loose: 1.75;
+
+  /* Tracking: grande más cerrado; etiquetas/mayúsculas más abierto */
+  --swiss-track-tighter: -0.03em;
+  --swiss-track-tight: -0.015em;
+  --swiss-track-normal: 0;
+  --swiss-track-wide: 0.04em;
+  --swiss-track-caps: 0.08em;
+  --swiss-track-label: 0.12em;
+
+  --swiss-weight-regular: 400;
+  --swiss-weight-medium: 500;
+  --swiss-weight-semibold: 600;
+  --swiss-weight-bold: 700;
+
+  /* Ancho de columna de lectura (cuerpo editorial) */
+  --swiss-measure-micro: 28ch;
+  --swiss-measure-narrow: 45ch;
+  --swiss-measure-optimal: 65ch;
+  --swiss-measure-wide: 80ch;
+
+  /* Anchos de lectura: rem fijos (independientes del margen de página) */
+  --swiss-container-sm: 40rem;
+  --swiss-container-md: 48rem;
+  --swiss-container-lg: 64rem;
+  --swiss-container-xl: 72rem;
+  --swiss-container-2xl: 80rem;
+  --swiss-page-padding-inline: var(--swiss-margin-page); /* 1× margen */
+  --swiss-page-padding-block: calc(var(--swiss-margin-page) * 2); /* 2× margen */
+  --swiss-gutter: var(--swiss-margin-page);
+  --swiss-columns: 12;
+  --swiss-sidebar-width: 18rem;
+  --swiss-aside-min: 14rem;
+
+  /* --- Bordes y divisores (precisión, sin adorno) --- */
+  --swiss-border-width: 1px;
+  --swiss-border-width-strong: 2px;
+  --swiss-border-style: solid;
+  --swiss-hairline: var(--swiss-border-width) var(--swiss-border-style)
+    hsl(var(--border));
+  --swiss-radius-none: 0;
+  --swiss-radius-sm: 2px;
+
+  /* Superficies planas; sombra casi imperceptible si hace falta separación */
+  --swiss-shadow-none: none;
+  --swiss-shadow-line: 0 var(--swiss-border-width) 0 hsl(var(--border));
+  --swiss-shadow-float: 0 var(--swiss-space-2) var(--swiss-space-6)
+    hsl(0 0% 0% / 0.08);
+
+  /* --- Movimiento: corto y funcional --- */
+  --swiss-duration-instant: 80ms;
+  --swiss-duration-fast: 120ms;
+  --swiss-duration-base: 200ms;
+  --swiss-duration-slow: 320ms;
+  --swiss-easing-default: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --swiss-easing-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* --- Capas (sin números mágicos dispersos en componentes) --- */
+  --swiss-z-base: 0;
+  --swiss-z-sticky: 10;
+  --swiss-z-dropdown: 100;
+  --swiss-z-overlay: 200;
+  --swiss-z-drawer: 300;
+  --swiss-z-modal: 400;
+  --swiss-z-toast: 500;
+
+  /* --- Piezas de UI: tamaños de control --- */
+  /* Mínimos en px: si el margen baja, la unidad ya no debe achicar targets táctiles por debajo de WCAG-ish */
+  --swiss-touch-min: max(
+    44px,
+    calc(var(--swiss-unit) * 5.5)
+  );
+  --swiss-control-height-xs: max(
+    28px,
+    calc(var(--swiss-unit) * 3.5)
+  );
+  --swiss-control-height-sm: max(
+    36px,
+    calc(var(--swiss-unit) * 4.5)
+  );
+  --swiss-control-height-md: var(--swiss-touch-min);
+  --swiss-control-height-lg: max(
+    52px,
+    calc(var(--swiss-unit) * 6.5)
+  );
+  --swiss-header-height: max(
+    56px,
+    calc(var(--swiss-unit) * 7)
+  );
+  --swiss-footer-band: var(--swiss-space-16);
+
+  --swiss-button-padding-x-sm: var(--swiss-space-4);
+  --swiss-button-padding-x-md: var(--swiss-space-6);
+  --swiss-button-padding-x-lg: var(--swiss-space-8);
+  --swiss-button-padding-y-sm: var(--swiss-space-2);
+  --swiss-button-padding-y-md: var(--swiss-space-3);
+  --swiss-button-padding-y-lg: var(--swiss-space-4);
+  --swiss-button-gap: var(--swiss-space-2);
+
+  --swiss-input-padding-x: var(--swiss-space-4);
+  --swiss-input-padding-y: var(--swiss-space-3);
+  --swiss-input-min-height: var(--swiss-control-height-md);
+
+  --swiss-chip-padding-x: var(--swiss-space-3);
+  --swiss-chip-padding-y: var(--swiss-space-1);
+  --swiss-badge-size: var(--swiss-text-sm);
+
+  --swiss-card-padding: var(--swiss-space-6);
+  --swiss-card-padding-lg: var(--swiss-space-8);
+  --swiss-section-gap: var(--swiss-space-12);
+  --swiss-stack-gap-sm: var(--swiss-space-2);
+  --swiss-stack-gap-md: var(--swiss-space-4);
+  --swiss-stack-gap-lg: var(--swiss-space-8);
+
+  /* Focus visible: contorno nítido, offset pequeño */
+  --swiss-focus-ring-width: 2px;
+  --swiss-focus-offset: 2px;
+
+  /* Separación vertical entre bloques tipo “Swiss poster” */
+  --swiss-block-rhythm: var(--swiss-space-8);
+}
+
+.dark {
+  --swiss-shadow-float: 0 var(--swiss-space-3) var(--swiss-space-8)
+    hsl(0 0% 0% / 0.35);
+}

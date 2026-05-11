@@ -1,0 +1,116 @@
+/**
+ * KUNG FU — App de estudio · Design Brief v1
+ * Cuadernillos teóricos digitales (tokens de producto).
+ *
+ * Colisión evitada con Tailwind/shadcn:
+ * - `--accent` aquí = naranja marca (#FF7800). Superficies sutiles hover: `--accent-muted` en globals.
+ * - Bordes del brief en RGBA: `--border-muted` / `--border-emphasis` (el `--border` HSL de globals alimenta `border-border`).
+ */
+
+:root {
+  /* --- §02 Color --- */
+  --accent: #ff7800;
+  --ink: #202020;
+  --paper: #ffffff;
+  --ink-inv: #ffffff;
+  --paper-inv: #202020;
+
+  --border-muted: rgba(32, 32, 32, 0.15);
+  --border-emphasis: rgba(32, 32, 32, 0.3);
+  --text-secondary: rgba(32, 32, 32, 0.55);
+
+  /* --- §03 Tipografía --- */
+  --font-sans: var(--font-helvetica-now-text), "Helvetica Now", "Neue Haas Grotesk",
+    Arial, sans-serif;
+  --font-display: var(--font-helvetica-now), "Helvetica Now", "Neue Haas Grotesk",
+    Arial, sans-serif;
+
+  --text-hero: clamp(2.25rem, 4vw + 1rem, 4rem);
+  --text-h1: 2rem;
+  --text-h2: 1.5rem;
+  --text-h3: 1.25rem;
+  --text-base: 1rem;
+  --text-sm: 0.875rem;
+  --text-xs: 0.75rem;
+
+  --leading-tight: 1.1;
+  --leading-normal: 1.5;
+
+  --weight-regular: 400;
+  --weight-bold: 700;
+
+  --tracking-nav: 0.08em;
+
+  /* --- §04 Espaciado (unidad 8px) --- */
+  --unit: 8px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* --- §04 Layout --- */
+  --header-height: 56px;
+  --page-padding: 24px;
+  --container-max: 72rem;
+  --reading-width: 65ch;
+  --gutter: 24px;
+
+  /* --- §06 / §08 Bordes y radio --- */
+  --border-width: 1px;
+  --radius: 0px;
+  --radius-sm: 2px;
+
+  /* --- §06 Movimiento --- */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --easing: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --easing-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* --- §08 Z-index --- */
+  --z-header: 10;
+  --z-dropdown: 100;
+  --z-modal: 400;
+  --z-toast: 500;
+
+  /* --- §08 Controles --- */
+  --touch-min: 44px;
+  --input-h: 44px;
+  --btn-h-sm: 36px;
+  --btn-h-md: 44px;
+
+  /* --- §5.6 Barra de progreso --- */
+  --progress-height: 4px;
+
+  /* --- §5.5 Ejercicios — feedback (contraste sobre paper; afinar si hace falta) --- */
+  --feedback-correct-border: #15803d;
+  --feedback-correct-bg: rgba(21, 128, 61, 0.06);
+  --feedback-correct-text: #14532d;
+
+  --feedback-incorrect-border: #b91c1c;
+  --feedback-incorrect-bg: rgba(185, 28, 28, 0.06);
+  --feedback-incorrect-text: #7f1d1d;
+
+  /* Focus §07 — coherente con acento (outline; Radix sigue usando ring en componentes) */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+}
+
+.dark {
+  --ink: #ffffff;
+  --paper: #202020;
+  --border-muted: rgba(255, 255, 255, 0.15);
+  --border-emphasis: rgba(255, 255, 255, 0.3);
+  --text-secondary: rgba(255, 255, 255, 0.55);
+
+  --feedback-correct-border: #22c55e;
+  --feedback-correct-bg: rgba(34, 197, 94, 0.1);
+  --feedback-correct-text: #bbf7d0;
+
+  --feedback-incorrect-border: #f87171;
+  --feedback-incorrect-bg: rgba(248, 113, 113, 0.1);
+  --feedback-incorrect-text: #fecaca;
+}

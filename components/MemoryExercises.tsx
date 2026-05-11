@@ -92,7 +92,7 @@ export function MemoryExercises({ onClose }: { onClose: () => void }) {
   if (!exerciseType) {
     return (
       <div className="h-full flex flex-col bg-background text-foreground overflow-hidden">
-        <div className="border-b-2 border-foreground p-3 flex-shrink-0">
+        <div className="border-b border-border p-3 flex-shrink-0">
           <h2 className="text-xl md:text-2xl font-trajan-black uppercase tracking-wide mb-3">
             Ejercicios de Memorización
           </h2>
@@ -100,7 +100,7 @@ export function MemoryExercises({ onClose }: { onClose: () => void }) {
           <div className="flex flex-wrap gap-2 mb-2">
             <button
               onClick={() => setStudyGroup('basico')}
-              className={`px-3 py-1 text-xs font-trajan border-2 border-foreground ${
+              className={`px-3 py-1 text-xs font-trajan border border-border ${
                 studyGroup === 'basico' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-secondary'
               }`}
             >
@@ -108,7 +108,7 @@ export function MemoryExercises({ onClose }: { onClose: () => void }) {
             </button>
             <button
               onClick={() => setStudyGroup('blanco')}
-              className={`px-3 py-1 text-xs font-trajan border-2 border-foreground ${
+              className={`px-3 py-1 text-xs font-trajan border border-border ${
                 studyGroup === 'blanco' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-secondary'
               }`}
             >
@@ -116,7 +116,7 @@ export function MemoryExercises({ onClose }: { onClose: () => void }) {
             </button>
             <button
               onClick={() => setStudyGroup('avanzado')}
-              className={`px-3 py-1 text-xs font-trajan border-2 border-foreground ${
+              className={`px-3 py-1 text-xs font-trajan border border-border ${
                 studyGroup === 'avanzado' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-secondary'
               }`}
             >
@@ -124,7 +124,7 @@ export function MemoryExercises({ onClose }: { onClose: () => void }) {
             </button>
             <button
               onClick={() => setStudyGroup('all')}
-              className={`px-3 py-1 text-xs font-trajan border-2 border-foreground ${
+              className={`px-3 py-1 text-xs font-trajan border border-border ${
                 studyGroup === 'all' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-secondary'
               }`}
             >
@@ -142,7 +142,7 @@ export function MemoryExercises({ onClose }: { onClose: () => void }) {
                   setExerciseType('fill-blanks')
                   startTimeRef.current = Date.now()
                 }}
-                className="w-full border-2 border-foreground p-4 hover:bg-secondary transition-colors text-left h-full"
+                className="w-full border border-border p-4 hover:bg-secondary transition-colors text-left h-full"
               >
                 <div className="flex items-center gap-2 mb-2">
                   <Target className="h-5 w-5" />
@@ -161,7 +161,7 @@ export function MemoryExercises({ onClose }: { onClose: () => void }) {
                   setExerciseType('matching')
                   startTimeRef.current = Date.now()
                 }}
-                className="w-full border-2 border-foreground p-4 hover:bg-secondary transition-colors text-left h-full"
+                className="w-full border border-border p-4 hover:bg-secondary transition-colors text-left h-full"
               >
                 <div className="flex items-center gap-2 mb-2">
                   <Shuffle className="h-5 w-5" />
@@ -180,7 +180,7 @@ export function MemoryExercises({ onClose }: { onClose: () => void }) {
                   setExerciseType('find-number')
                   startTimeRef.current = Date.now()
                 }}
-                className="w-full border-2 border-foreground p-4 hover:bg-secondary transition-colors text-left h-full"
+                className="w-full border border-border p-4 hover:bg-secondary transition-colors text-left h-full"
               >
                 <div className="flex items-center gap-2 mb-2">
                   <Target className="h-5 w-5" />
@@ -199,7 +199,7 @@ export function MemoryExercises({ onClose }: { onClose: () => void }) {
                   setExerciseType('speed')
                   startTimeRef.current = Date.now()
                 }}
-                className="w-full border-2 border-foreground p-4 hover:bg-secondary transition-colors text-left h-full"
+                className="w-full border border-border p-4 hover:bg-secondary transition-colors text-left h-full"
               >
                 <div className="flex items-center gap-2 mb-2">
                   <Clock className="h-5 w-5" />
@@ -218,7 +218,7 @@ export function MemoryExercises({ onClose }: { onClose: () => void }) {
                   setExerciseType('typing')
                   startTimeRef.current = Date.now()
                 }}
-                className="w-full border-2 border-foreground p-4 hover:bg-secondary transition-colors text-left h-full"
+                className="w-full border border-border p-4 hover:bg-secondary transition-colors text-left h-full"
               >
                 <div className="flex items-center gap-2 mb-2">
                   <CheckCircle2 className="h-5 w-5" />
@@ -237,7 +237,7 @@ export function MemoryExercises({ onClose }: { onClose: () => void }) {
                   setExerciseType('image-memory')
                   startTimeRef.current = Date.now()
                 }}
-                className="w-full border-2 border-foreground p-4 hover:bg-secondary transition-colors text-left h-full"
+                className="w-full border border-border p-4 hover:bg-secondary transition-colors text-left h-full"
               >
                 <div className="flex items-center gap-2 mb-2">
                   <ImageIcon className="h-5 w-5" />
@@ -251,10 +251,10 @@ export function MemoryExercises({ onClose }: { onClose: () => void }) {
           </div>
         </div>
 
-        <div className="border-t-2 border-foreground p-3 flex-shrink-0">
+        <div className="border-t border-border p-3 flex-shrink-0">
           <button
             onClick={onClose}
-            className="w-full border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary"
+            className="w-full border border-border p-2 font-trajan-bold bg-background hover:bg-secondary"
           >
             Volver
           </button>
@@ -429,20 +429,20 @@ function FillBlanksExercise({
     
     return (
       <div className="flex-grow flex flex-col p-4 overflow-hidden">
-        <div className="text-center border-2 border-foreground p-4 mb-4 flex-shrink-0">
+        <div className="text-center border border-border p-4 mb-4 flex-shrink-0">
           <h2 className="text-xl md:text-2xl font-trajan-black uppercase mb-2">¡Ejercicio Completado!</h2>
           <div className="text-3xl md:text-4xl font-trajan-black mb-2">{percentage}%</div>
           <p className="font-trajan mb-2">{score} de {palancas.length} correctas</p>
         </div>
 
         {incorrectResults.length > 0 && (
-          <div className="flex-1 overflow-y-auto border-2 border-foreground p-4 mb-4 min-h-0">
-            <h3 className="font-trajan-bold text-lg mb-3 text-center border-b-2 border-foreground pb-2">
+          <div className="flex-1 overflow-y-auto border border-border p-4 mb-4 min-h-0">
+            <h3 className="font-trajan-bold text-lg mb-3 text-center border-b border-border pb-2">
               Respuestas Incorrectas ({incorrectResults.length})
             </h3>
             <div className="space-y-3">
               {incorrectResults.map((result, idx) => (
-                <div key={idx} className="border-2 border-foreground p-3 bg-red-50 dark:bg-red-900/20">
+                <div key={idx} className="border border-border p-3 bg-red-50 dark:bg-red-900/20">
                   <div className="flex items-start gap-2 mb-2">
                     <span className="font-trajan-bold text-sm min-w-[3rem]">#{result.palancaNumber}</span>
                     <p className="font-trajan text-sm flex-1">{result.palancaName}</p>
@@ -466,7 +466,7 @@ function FillBlanksExercise({
         <div className="flex gap-2 flex-shrink-0">
           <button
             onClick={onReset}
-            className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-primary text-primary-foreground"
+            className="flex-1 border border-border p-2 font-trajan-bold bg-primary text-primary-foreground"
           >
             Nuevo Ejercicio
           </button>
@@ -479,7 +479,7 @@ function FillBlanksExercise({
               setIsAnswered(false)
               setResults([])
             }}
-            className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary"
+            className="flex-1 border border-border p-2 font-trajan-bold bg-background hover:bg-secondary"
           >
             Repetir
           </button>
@@ -500,7 +500,7 @@ function FillBlanksExercise({
       </div>
 
       <div className="flex-grow flex items-center justify-center">
-        <div className="w-full max-w-2xl border-2 border-foreground p-6 text-center">
+        <div className="w-full max-w-2xl border border-border p-6 text-center">
           <div className="text-6xl md:text-8xl font-trajan-black mb-6">
             #{currentPalanca.number}
           </div>
@@ -527,13 +527,13 @@ function FillBlanksExercise({
                 onChange={(e) => setUserAnswer(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                 placeholder="Escribe la respuesta completa..."
-                className="w-full p-3 border-2 border-foreground bg-background font-trajan text-center text-lg outline-none"
+                className="w-full p-3 border border-border bg-background font-trajan text-center text-lg outline-none"
                 autoFocus
               />
               <button
                 onClick={handleSubmit}
                 disabled={!userAnswer.trim()}
-                className="w-full mt-3 border-2 border-foreground p-2 font-trajan-bold bg-primary text-primary-foreground disabled:opacity-50"
+                className="w-full mt-3 border border-border p-2 font-trajan-bold bg-primary text-primary-foreground disabled:opacity-50"
               >
                 Verificar
               </button>
@@ -542,10 +542,10 @@ function FillBlanksExercise({
         </div>
       </div>
 
-      <div className="border-t-2 border-foreground pt-3 flex gap-2">
+      <div className="border-t border-border pt-3 flex gap-2">
         <button
           onClick={onReset}
-          className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary"
+          className="flex-1 border border-border p-2 font-trajan-bold bg-background hover:bg-secondary"
         >
           <RotateCcw className="h-4 w-4 inline mr-1" />
           Salir
@@ -654,20 +654,20 @@ function MatchingExercise({
     
     return (
       <div className="flex-grow flex flex-col p-4 overflow-hidden">
-        <div className="text-center border-2 border-foreground p-4 mb-4 flex-shrink-0">
+        <div className="text-center border border-border p-4 mb-4 flex-shrink-0">
           <h2 className="text-xl md:text-2xl font-trajan-black uppercase mb-2">¡Ejercicio Completado!</h2>
           <div className="text-3xl md:text-4xl font-trajan-black mb-2">{percentage}%</div>
           <p className="font-trajan mb-2">{score} de {palancas.length} correctas</p>
         </div>
 
         {incorrectResults.length > 0 && (
-          <div className="flex-1 overflow-y-auto border-2 border-foreground p-4 mb-4 min-h-0">
-            <h3 className="font-trajan-bold text-lg mb-3 text-center border-b-2 border-foreground pb-2">
+          <div className="flex-1 overflow-y-auto border border-border p-4 mb-4 min-h-0">
+            <h3 className="font-trajan-bold text-lg mb-3 text-center border-b border-border pb-2">
               Emparejamientos Incorrectos ({incorrectResults.length})
             </h3>
             <div className="space-y-3">
               {incorrectResults.map((result, idx) => (
-                <div key={idx} className="border-2 border-foreground p-3 bg-red-50 dark:bg-red-900/20">
+                <div key={idx} className="border border-border p-3 bg-red-50 dark:bg-red-900/20">
                   <div className="flex items-start gap-2 mb-2">
                     <span className="font-trajan-bold text-sm min-w-[3rem]">#{result.palancaNumber}</span>
                     <p className="font-trajan text-sm flex-1">{result.palancaName}</p>
@@ -691,7 +691,7 @@ function MatchingExercise({
         <div className="flex gap-2 flex-shrink-0">
           <button
             onClick={onReset}
-            className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-primary text-primary-foreground"
+            className="flex-1 border border-border p-2 font-trajan-bold bg-primary text-primary-foreground"
           >
             Nuevo Ejercicio
           </button>
@@ -704,7 +704,7 @@ function MatchingExercise({
               setSelectedNames([])
               setResults([])
             }}
-            className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary"
+            className="flex-1 border border-border p-2 font-trajan-bold bg-background hover:bg-secondary"
           >
             Repetir
           </button>
@@ -725,7 +725,7 @@ function MatchingExercise({
       </div>
 
       <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3 px-2 min-h-0">
-        <div className="border-2 border-foreground p-3 flex flex-col overflow-hidden min-h-0">
+        <div className="border border-border p-3 flex flex-col overflow-hidden min-h-0">
           <h3 className="font-trajan-bold mb-2 text-center text-sm flex-shrink-0">Números</h3>
           <div className="grid grid-cols-2 gap-2 overflow-y-auto flex-1 min-h-0">
             {shuffledNumbers.map(num => {
@@ -737,7 +737,7 @@ function MatchingExercise({
                   key={num}
                   onClick={() => handleNumberClick(num)}
                   disabled={isMatched}
-                  className={`p-2 border-2 border-foreground font-trajan-bold text-xs md:text-sm ${
+                  className={`p-2 border border-border font-trajan-bold text-xs md:text-sm ${
                     isMatched ? 'bg-green-500 text-green-900 opacity-50' :
                     isSelected ? 'bg-primary text-primary-foreground' :
                     'bg-background hover:bg-secondary'
@@ -750,7 +750,7 @@ function MatchingExercise({
           </div>
         </div>
 
-        <div className="border-2 border-foreground p-3 flex flex-col overflow-hidden min-h-0">
+        <div className="border border-border p-3 flex flex-col overflow-hidden min-h-0">
           <h3 className="font-trajan-bold mb-2 text-center text-sm flex-shrink-0">Nombres</h3>
           <div className="space-y-1.5 overflow-y-auto flex-1 min-h-0">
             {shuffledNames.map(name => {
@@ -762,7 +762,7 @@ function MatchingExercise({
                   key={name}
                   onClick={() => handleNameClick(name)}
                   disabled={isMatched}
-                  className={`w-full p-1.5 border-2 border-foreground font-trajan text-xs text-left ${
+                  className={`w-full p-1.5 border border-border font-trajan text-xs text-left ${
                     isMatched ? 'bg-green-500 text-green-900 opacity-50' :
                     isSelected ? 'bg-primary text-primary-foreground' :
                     'bg-background hover:bg-secondary'
@@ -776,10 +776,10 @@ function MatchingExercise({
         </div>
       </div>
 
-      <div className="border-t-2 border-foreground pt-2 mt-3 flex gap-2 flex-shrink-0 px-2">
+      <div className="border-t border-border pt-2 mt-3 flex gap-2 flex-shrink-0 px-2">
         <button
           onClick={onReset}
-          className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary text-sm"
+          className="flex-1 border border-border p-2 font-trajan-bold bg-background hover:bg-secondary text-sm"
         >
           <RotateCcw className="h-4 w-4 inline mr-1" />
           Salir
@@ -882,20 +882,20 @@ function FindNumberExercise({
     
     return (
       <div className="flex-grow flex flex-col p-4 overflow-hidden">
-        <div className="text-center border-2 border-foreground p-4 mb-4 flex-shrink-0">
+        <div className="text-center border border-border p-4 mb-4 flex-shrink-0">
           <h2 className="text-xl md:text-2xl font-trajan-black uppercase mb-2">¡Ejercicio Completado!</h2>
           <div className="text-3xl md:text-4xl font-trajan-black mb-2">{percentage}%</div>
           <p className="font-trajan mb-2">{score} de {palancas.length} correctas</p>
         </div>
 
         {incorrectResults.length > 0 && (
-          <div className="flex-1 overflow-y-auto border-2 border-foreground p-4 mb-4 min-h-0">
-            <h3 className="font-trajan-bold text-lg mb-3 text-center border-b-2 border-foreground pb-2">
+          <div className="flex-1 overflow-y-auto border border-border p-4 mb-4 min-h-0">
+            <h3 className="font-trajan-bold text-lg mb-3 text-center border-b border-border pb-2">
               Respuestas Incorrectas ({incorrectResults.length})
             </h3>
             <div className="space-y-3">
               {incorrectResults.map((result, idx) => (
-                <div key={idx} className="border-2 border-foreground p-3 bg-red-50 dark:bg-red-900/20">
+                <div key={idx} className="border border-border p-3 bg-red-50 dark:bg-red-900/20">
                   <div className="flex items-start gap-2 mb-2">
                     <span className="font-trajan text-sm flex-1">{result.palancaName}</span>
                   </div>
@@ -918,7 +918,7 @@ function FindNumberExercise({
         <div className="flex gap-2 flex-shrink-0">
           <button
             onClick={onReset}
-            className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-primary text-primary-foreground"
+            className="flex-1 border border-border p-2 font-trajan-bold bg-primary text-primary-foreground"
           >
             Nuevo Ejercicio
           </button>
@@ -934,7 +934,7 @@ function FindNumberExercise({
               setResults([])
               generateOptions(newShuffled[0])
             }}
-            className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary"
+            className="flex-1 border border-border p-2 font-trajan-bold bg-background hover:bg-secondary"
           >
             Repetir
           </button>
@@ -957,7 +957,7 @@ function FindNumberExercise({
       </div>
 
       <div className="flex-grow flex items-center justify-center min-h-0">
-        <div className="w-full max-w-2xl border-2 border-foreground p-6 text-center">
+        <div className="w-full max-w-2xl border border-border p-6 text-center">
           <div className="text-xl md:text-2xl font-trajan mb-6 px-4">
             {currentPalanca?.name}
           </div>
@@ -983,7 +983,7 @@ function FindNumberExercise({
                 <button
                   key={num}
                   onClick={() => handleSelect(num)}
-                  className={`p-4 border-2 border-foreground font-trajan-bold text-lg md:text-xl transition-colors ${
+                  className={`p-4 border border-border font-trajan-bold text-lg md:text-xl transition-colors ${
                     selectedNumber === num
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-background hover:bg-secondary'
@@ -998,7 +998,7 @@ function FindNumberExercise({
           {!isAnswered && selectedNumber !== null && (
             <button
               onClick={handleSubmit}
-              className="w-full border-2 border-foreground p-2 font-trajan-bold bg-primary text-primary-foreground"
+              className="w-full border border-border p-2 font-trajan-bold bg-primary text-primary-foreground"
             >
               Verificar
             </button>
@@ -1006,10 +1006,10 @@ function FindNumberExercise({
         </div>
       </div>
 
-      <div className="border-t-2 border-foreground pt-3 mt-4 flex gap-2 flex-shrink-0">
+      <div className="border-t border-border pt-3 mt-4 flex gap-2 flex-shrink-0">
         <button
           onClick={onReset}
-          className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary"
+          className="flex-1 border border-border p-2 font-trajan-bold bg-background hover:bg-secondary"
         >
           <RotateCcw className="h-4 w-4 inline mr-1" />
           Salir
@@ -1105,20 +1105,20 @@ function SpeedExercise({
     
     return (
       <div className="flex-grow flex flex-col p-4 overflow-hidden">
-        <div className="text-center border-2 border-foreground p-4 mb-4 flex-shrink-0">
+        <div className="text-center border border-border p-4 mb-4 flex-shrink-0">
           <h2 className="text-xl md:text-2xl font-trajan-black uppercase mb-2">¡Tiempo Agotado!</h2>
           <div className="text-3xl md:text-4xl font-trajan-black mb-2">{score}</div>
           <p className="font-trajan mb-2">Respuestas correctas de {totalAnswered} respondidas</p>
         </div>
 
         {incorrectResults.length > 0 && (
-          <div className="flex-1 overflow-y-auto border-2 border-foreground p-4 mb-4 min-h-0">
-            <h3 className="font-trajan-bold text-lg mb-3 text-center border-b-2 border-foreground pb-2">
+          <div className="flex-1 overflow-y-auto border border-border p-4 mb-4 min-h-0">
+            <h3 className="font-trajan-bold text-lg mb-3 text-center border-b border-border pb-2">
               Respuestas Incorrectas ({incorrectResults.length})
             </h3>
             <div className="space-y-3">
               {incorrectResults.map((result, idx) => (
-                <div key={idx} className="border-2 border-foreground p-3 bg-red-50 dark:bg-red-900/20">
+                <div key={idx} className="border border-border p-3 bg-red-50 dark:bg-red-900/20">
                   <div className="flex items-start gap-2 mb-2">
                     <span className="font-trajan-bold text-sm min-w-[3rem]">#{result.palancaNumber}</span>
                     <p className="font-trajan text-sm flex-1">{result.palancaName}</p>
@@ -1142,7 +1142,7 @@ function SpeedExercise({
         <div className="flex gap-2 flex-shrink-0">
           <button
             onClick={onReset}
-            className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-primary text-primary-foreground"
+            className="flex-1 border border-border p-2 font-trajan-bold bg-primary text-primary-foreground"
           >
             Nuevo Ejercicio
           </button>
@@ -1156,7 +1156,7 @@ function SpeedExercise({
               setResults([])
               setShuffled([...palancas].sort(() => Math.random() - 0.5))
             }}
-            className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary"
+            className="flex-1 border border-border p-2 font-trajan-bold bg-background hover:bg-secondary"
           >
             Repetir
           </button>
@@ -1177,7 +1177,7 @@ function SpeedExercise({
       </div>
 
       <div className="flex-grow flex items-center justify-center">
-        <div className="w-full max-w-2xl border-2 border-foreground p-6 text-center">
+        <div className="w-full max-w-2xl border border-border p-6 text-center">
           <div className="text-6xl md:text-8xl font-trajan-black mb-6">
             #{shuffled[currentIndex]?.number}
           </div>
@@ -1188,13 +1188,13 @@ function SpeedExercise({
               onChange={(e) => setUserAnswer(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
               placeholder="Escribe el nombre rápidamente..."
-              className="w-full p-3 border-2 border-foreground bg-background font-trajan text-center text-lg outline-none"
+              className="w-full p-3 border border-border bg-background font-trajan text-center text-lg outline-none"
               autoFocus
             />
             <button
               onClick={handleSubmit}
               disabled={!userAnswer.trim()}
-              className="w-full mt-3 border-2 border-foreground p-2 font-trajan-bold bg-primary text-primary-foreground disabled:opacity-50"
+              className="w-full mt-3 border border-border p-2 font-trajan-bold bg-primary text-primary-foreground disabled:opacity-50"
             >
               Siguiente
             </button>
@@ -1202,10 +1202,10 @@ function SpeedExercise({
         </div>
       </div>
 
-      <div className="border-t-2 border-foreground pt-3 mt-4 flex gap-2 flex-shrink-0">
+      <div className="border-t border-border pt-3 mt-4 flex gap-2 flex-shrink-0">
         <button
           onClick={onReset}
-          className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary"
+          className="flex-1 border border-border p-2 font-trajan-bold bg-background hover:bg-secondary"
         >
           <RotateCcw className="h-4 w-4 inline mr-1" />
           Salir
@@ -1287,20 +1287,20 @@ function TypingExercise({
     
     return (
       <div className="flex-grow flex flex-col p-4 overflow-hidden">
-        <div className="text-center border-2 border-foreground p-4 mb-4 flex-shrink-0">
+        <div className="text-center border border-border p-4 mb-4 flex-shrink-0">
           <h2 className="text-xl md:text-2xl font-trajan-black uppercase mb-2">¡Ejercicio Completado!</h2>
           <div className="text-3xl md:text-4xl font-trajan-black mb-2">{percentage}%</div>
           <p className="font-trajan mb-2">{score} de {palancas.length} correctas</p>
         </div>
 
         {incorrectResults.length > 0 && (
-          <div className="flex-1 overflow-y-auto border-2 border-foreground p-4 mb-4 min-h-0">
-            <h3 className="font-trajan-bold text-lg mb-3 text-center border-b-2 border-foreground pb-2">
+          <div className="flex-1 overflow-y-auto border border-border p-4 mb-4 min-h-0">
+            <h3 className="font-trajan-bold text-lg mb-3 text-center border-b border-border pb-2">
               Respuestas Incorrectas ({incorrectResults.length})
             </h3>
             <div className="space-y-3">
               {incorrectResults.map((result, idx) => (
-                <div key={idx} className="border-2 border-foreground p-3 bg-red-50 dark:bg-red-900/20">
+                <div key={idx} className="border border-border p-3 bg-red-50 dark:bg-red-900/20">
                   <div className="flex items-start gap-2 mb-2">
                     <span className="font-trajan-bold text-sm min-w-[3rem]">#{result.palancaNumber}</span>
                     <p className="font-trajan text-sm flex-1">{result.palancaName}</p>
@@ -1324,7 +1324,7 @@ function TypingExercise({
         <div className="flex gap-2 flex-shrink-0">
           <button
             onClick={onReset}
-            className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-primary text-primary-foreground"
+            className="flex-1 border border-border p-2 font-trajan-bold bg-primary text-primary-foreground"
           >
             Nuevo Ejercicio
           </button>
@@ -1338,7 +1338,7 @@ function TypingExercise({
               setResults([])
               setShuffled([...palancas].sort(() => Math.random() - 0.5))
             }}
-            className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary"
+            className="flex-1 border border-border p-2 font-trajan-bold bg-background hover:bg-secondary"
           >
             Repetir
           </button>
@@ -1359,7 +1359,7 @@ function TypingExercise({
       </div>
 
       <div className="flex-grow flex items-center justify-center">
-        <div className="w-full max-w-2xl border-2 border-foreground p-6 text-center">
+        <div className="w-full max-w-2xl border border-border p-6 text-center">
           <div className="text-6xl md:text-8xl font-trajan-black mb-6">
             #{shuffled[currentIndex]?.number}
           </div>
@@ -1383,13 +1383,13 @@ function TypingExercise({
                 onChange={(e) => setUserAnswer(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                 placeholder="Escribe el nombre completo..."
-                className="w-full p-3 border-2 border-foreground bg-background font-trajan text-center text-lg outline-none"
+                className="w-full p-3 border border-border bg-background font-trajan text-center text-lg outline-none"
                 autoFocus
               />
               <button
                 onClick={handleSubmit}
                 disabled={!userAnswer.trim()}
-                className="w-full mt-3 border-2 border-foreground p-2 font-trajan-bold bg-primary text-primary-foreground disabled:opacity-50"
+                className="w-full mt-3 border border-border p-2 font-trajan-bold bg-primary text-primary-foreground disabled:opacity-50"
               >
                 Verificar
               </button>
@@ -1398,10 +1398,10 @@ function TypingExercise({
         </div>
       </div>
 
-      <div className="border-t-2 border-foreground pt-3 mt-4 flex gap-2 flex-shrink-0">
+      <div className="border-t border-border pt-3 mt-4 flex gap-2 flex-shrink-0">
         <button
           onClick={onReset}
-          className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary"
+          className="flex-1 border border-border p-2 font-trajan-bold bg-background hover:bg-secondary"
         >
           <RotateCcw className="h-4 w-4 inline mr-1" />
           Salir
@@ -1538,20 +1538,20 @@ function ImageMemoryExercise({
     
     return (
       <div className="flex-grow flex flex-col p-4 overflow-hidden">
-        <div className="text-center border-2 border-foreground p-4 mb-4 flex-shrink-0">
+        <div className="text-center border border-border p-4 mb-4 flex-shrink-0">
           <h2 className="text-xl md:text-2xl font-trajan-black uppercase mb-2">¡Ejercicio Completado!</h2>
           <div className="text-3xl md:text-4xl font-trajan-black mb-2">{percentage}%</div>
           <p className="font-trajan mb-2">{score} de {shuffled.length} correctas</p>
         </div>
 
         {incorrectResults.length > 0 && (
-          <div className="flex-1 overflow-y-auto border-2 border-foreground p-4 mb-4 min-h-0">
-            <h3 className="font-trajan-bold text-lg mb-3 text-center border-b-2 border-foreground pb-2">
+          <div className="flex-1 overflow-y-auto border border-border p-4 mb-4 min-h-0">
+            <h3 className="font-trajan-bold text-lg mb-3 text-center border-b border-border pb-2">
               Respuestas Incorrectas ({incorrectResults.length})
             </h3>
             <div className="space-y-3">
               {incorrectResults.map((result, idx) => (
-                <div key={idx} className="border-2 border-foreground p-3 bg-red-50 dark:bg-red-900/20">
+                <div key={idx} className="border border-border p-3 bg-red-50 dark:bg-red-900/20">
                   <div className="flex items-start gap-2 mb-2">
                     <span className="font-trajan-bold text-sm min-w-[3rem]">#{result.palancaNumber}</span>
                     <p className="font-trajan text-sm flex-1">{result.palancaName}</p>
@@ -1575,7 +1575,7 @@ function ImageMemoryExercise({
         <div className="flex gap-2 flex-shrink-0">
           <button
             onClick={onReset}
-            className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-primary text-primary-foreground"
+            className="flex-1 border border-border p-2 font-trajan-bold bg-primary text-primary-foreground"
           >
             Nuevo Ejercicio
           </button>
@@ -1595,7 +1595,7 @@ function ImageMemoryExercise({
                 generateOptions(newShuffled[0])
               }
             }}
-            className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary"
+            className="flex-1 border border-border p-2 font-trajan-bold bg-background hover:bg-secondary"
           >
             Repetir
           </button>
@@ -1630,13 +1630,13 @@ function ImageMemoryExercise({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="w-full max-w-2xl border-2 border-foreground p-6 text-center"
+            className="w-full max-w-2xl border border-border p-6 text-center"
           >
             <div className="mb-4">
               <p className="font-trajan-bold text-lg mb-2">Memoriza esta imagen</p>
               <div className="text-3xl font-trajan-black mb-4">{timeRemaining}</div>
             </div>
-            <div className="relative w-full max-w-md h-auto mx-auto border-2 border-foreground p-2 bg-background">
+            <div className="relative w-full max-w-md h-auto mx-auto border border-border p-2 bg-background">
               <Image
                 src={currentPalanca.imageUrl!}
                 alt="Palanca"
@@ -1648,10 +1648,10 @@ function ImageMemoryExercise({
             </div>
           </motion.div>
         ) : (
-          <div className="w-full max-w-2xl border-2 border-foreground p-6 text-center">
+          <div className="w-full max-w-2xl border border-border p-6 text-center">
             <div className="mb-6">
               <p className="font-trajan-bold text-xl mb-4">¿Qué palanca era?</p>
-              <div className="h-32 border-2 border-foreground bg-muted flex items-center justify-center">
+              <div className="h-32 border border-border bg-muted flex items-center justify-center">
                 <p className="font-trajan text-muted-foreground">Imagen oculta</p>
               </div>
             </div>
@@ -1682,7 +1682,7 @@ function ImageMemoryExercise({
                       <div key={index} className="grid-col grid-col-12">
                         <button
                           onClick={() => handleSelect(option)}
-                          className={`w-full text-left border-2 border-foreground p-3 transition-colors ${
+                          className={`w-full text-left border border-border p-3 transition-colors ${
                             selectedOption === option
                               ? 'bg-primary text-primary-foreground'
                               : 'bg-background hover:bg-secondary'
@@ -1706,7 +1706,7 @@ function ImageMemoryExercise({
                 {selectedOption && (
                   <button
                     onClick={handleSubmit}
-                    className="w-full border-2 border-foreground p-2 font-trajan-bold bg-primary text-primary-foreground"
+                    className="w-full border border-border p-2 font-trajan-bold bg-primary text-primary-foreground"
                   >
                     Verificar
                   </button>
@@ -1717,10 +1717,10 @@ function ImageMemoryExercise({
         )}
       </div>
 
-      <div className="border-t-2 border-foreground pt-3 mt-4 flex gap-2 flex-shrink-0">
+      <div className="border-t border-border pt-3 mt-4 flex gap-2 flex-shrink-0">
         <button
           onClick={onReset}
-          className="flex-1 border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary"
+          className="flex-1 border border-border p-2 font-trajan-bold bg-background hover:bg-secondary"
         >
           <RotateCcw className="h-4 w-4 inline mr-1" />
           Salir

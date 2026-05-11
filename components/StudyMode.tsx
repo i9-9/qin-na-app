@@ -115,7 +115,7 @@ export function StudyMode({ onClose }: { onClose: () => void }) {
   return (
     <div className="h-full flex flex-col bg-background text-foreground">
       {/* Header */}
-      <div className="border-b-2 border-foreground p-3 flex-shrink-0">
+      <div className="border-b border-border p-3 flex-shrink-0">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-xl md:text-2xl font-trajan-black uppercase tracking-wide flex items-center">
             <BookOpen className="mr-2 h-5 w-5" />
@@ -123,7 +123,7 @@ export function StudyMode({ onClose }: { onClose: () => void }) {
           </h2>
           <button
             onClick={onClose}
-            className="h-8 w-8 flex items-center justify-center hover:bg-secondary border-2 border-foreground"
+            className="h-8 w-8 flex items-center justify-center hover:bg-secondary border border-border"
           >
             <X className="h-4 w-4" />
           </button>
@@ -131,7 +131,7 @@ export function StudyMode({ onClose }: { onClose: () => void }) {
 
         {/* Controls */}
         <div className="flex flex-wrap gap-2 mb-2">
-          <div className="flex gap-1 border-2 border-foreground">
+          <div className="flex gap-1 border border-border">
             <button
               onClick={() => setStudyGroup('basico')}
               className={`px-3 py-1 text-xs font-trajan ${
@@ -166,7 +166,7 @@ export function StudyMode({ onClose }: { onClose: () => void }) {
             </button>
           </div>
 
-          <div className="flex gap-1 border-2 border-foreground">
+          <div className="flex gap-1 border border-border">
             <button
               onClick={() => setStudyMode('number-to-name')}
               className={`px-3 py-1 text-xs font-trajan ${
@@ -187,7 +187,7 @@ export function StudyMode({ onClose }: { onClose: () => void }) {
 
           <button
             onClick={handleShuffle}
-            className={`px-3 py-1 text-xs font-trajan border-2 border-foreground ${
+            className={`px-3 py-1 text-xs font-trajan border border-border ${
               isShuffled ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-secondary'
             }`}
           >
@@ -218,7 +218,7 @@ export function StudyMode({ onClose }: { onClose: () => void }) {
             exit={{ opacity: 0, x: -50 }}
             className="w-full max-w-2xl"
           >
-            <div className="border-2 border-foreground p-6 md:p-8 min-h-[300px] flex flex-col items-center justify-center">
+            <div className="border border-border p-6 md:p-8 min-h-[300px] flex flex-col items-center justify-center">
               {/* Card Number Indicator */}
               <div className="text-sm font-mono mb-4 text-muted-foreground">
                 Tarjeta {currentIndex + 1} de {cards.length}
@@ -284,7 +284,7 @@ export function StudyMode({ onClose }: { onClose: () => void }) {
                 >
                   <button
                     onClick={() => handleSetStatus('review')}
-                    className={`flex-1 py-2 px-3 border-2 border-foreground font-trajan text-sm ${
+                    className={`flex-1 py-2 px-3 border border-border font-trajan text-sm ${
                       currentCard.status === 'review'
                         ? 'bg-yellow-500 text-yellow-900'
                         : 'bg-background hover:bg-secondary'
@@ -294,7 +294,7 @@ export function StudyMode({ onClose }: { onClose: () => void }) {
                   </button>
                   <button
                     onClick={() => handleSetStatus('mastered')}
-                    className={`flex-1 py-2 px-3 border-2 border-foreground font-trajan text-sm ${
+                    className={`flex-1 py-2 px-3 border border-border font-trajan text-sm ${
                       currentCard.status === 'mastered'
                         ? 'bg-green-500 text-green-900'
                         : 'bg-background hover:bg-secondary'
@@ -310,12 +310,12 @@ export function StudyMode({ onClose }: { onClose: () => void }) {
       </div>
 
       {/* Navigation Footer */}
-      <div className="border-t-2 border-foreground p-3 flex-shrink-0">
+      <div className="border-t border-border p-3 flex-shrink-0">
         <div className="flex items-center justify-between gap-2">
           <button
             onClick={handlePrevious}
             disabled={currentIndex === 0}
-            className="flex items-center gap-2 px-4 py-2 border-2 border-foreground font-trajan-bold bg-background hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-4 py-2 border border-border font-trajan-bold bg-background hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ChevronLeft className="h-4 w-4" />
             Anterior
@@ -324,7 +324,7 @@ export function StudyMode({ onClose }: { onClose: () => void }) {
           <div className="flex gap-2">
             <button
               onClick={handleResetProgress}
-              className="px-3 py-2 border-2 border-foreground font-trajan text-sm bg-background hover:bg-secondary"
+              className="px-3 py-2 border border-border font-trajan text-sm bg-background hover:bg-secondary"
               title="Resetear progreso"
             >
               <RotateCcw className="h-4 w-4" />
@@ -334,7 +334,7 @@ export function StudyMode({ onClose }: { onClose: () => void }) {
           <button
             onClick={handleNext}
             disabled={currentIndex === cards.length - 1}
-            className="flex items-center gap-2 px-4 py-2 border-2 border-foreground font-trajan-bold bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-4 py-2 border border-border font-trajan-bold bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Siguiente
             <ChevronRight className="h-4 w-4" />

@@ -1,3 +1,7 @@
+@import '../styles/swiss-ux.css';
+@import '../styles/kungfu-tokens.css';
+@import '../styles/motion-ux.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,125 +9,109 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 0 0% 12.5%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 12.5%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
-
-    /* Sistema de cuadrícula brutalista */
-    --grid-columns: 12;
-    --grid-gutter: 1rem;
-    --container-margin: 2rem;
-    
-    /* Espaciado brutalista */
-    --space-1: 0.25rem;
-    --space-2: 0.5rem;
-    --space-3: 1rem;
-    --space-4: 1.5rem;
-    --space-5: 2rem;
-    --space-6: 3rem;
-    --space-7: 4rem;
-    --space-8: 6rem;
-    
-    /* Tipografía brutalista */
-    --type-scale-ratio: 1.25;
-    --font-size-base: 1rem;
-    --line-height-base: 1.5;
+    --popover-foreground: 0 0% 12.5%;
+    --primary: 28 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 12.5%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 52%;
+    --accent-muted: 28 40% 96%;
+    --accent-muted-foreground: 0 0% 12.5%;
+    --destructive: 0 84% 52%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 85%;
+    --input: 0 0% 85%;
+    --ring: 28 100% 50%;
+    --radius: 0px;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --background: 0 0% 12.5%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 15%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 12.5%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 28 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 18%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 61%;
+    --accent-muted: 0 0% 18%;
+    --accent-muted-foreground: 0 0% 98%;
+    --destructive: 0 62% 48%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 22%;
+    --input: 0 0% 22%;
+    --ring: 28 100% 50%;
   }
 }
 
 @layer base {
   * {
     @apply border-border;
-    box-sizing: border-box;
   }
   body {
     @apply bg-background text-foreground;
-    margin: 0;
-    padding: 0;
+    font-family: var(--font-helvetica-now-text), 'Helvetica Neue', Helvetica, Arial,
+      sans-serif;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+    text-rendering: geometricPrecision;
+    letter-spacing: 0;
   }
-  h1, h2, h3, h4, h5, h6 {
-    font-family: "trajan-sans-pro", sans-serif;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-helvetica-now), 'Helvetica Neue', Helvetica, Arial, sans-serif;
     margin: 0;
     line-height: 1.2;
   }
 }
 
-/* Utility classes para Trajan Sans Pro */
+/* Clases legacy "Trajan" → Helvetica Now (misma app, estilo Loto Blanco / wiki) */
 .font-trajan {
-  font-family: "trajan-sans-pro", sans-serif;
+  font-family: var(--font-helvetica-now-text), 'Helvetica Neue', Helvetica, Arial,
+    sans-serif;
+  font-weight: 400;
 }
 
 .font-trajan-regular {
-  font-family: "trajan-sans-pro", sans-serif;
+  font-family: var(--font-helvetica-now-text), 'Helvetica Neue', Helvetica, Arial,
+    sans-serif;
   font-weight: 400;
-  font-style: normal;
 }
 
 .font-trajan-bold {
-  font-family: "trajan-sans-pro", sans-serif;
-  font-weight: 700;
-  font-style: normal;
+  font-family: var(--font-helvetica-now-text), 'Helvetica Neue', Helvetica, Arial,
+    sans-serif;
+  font-weight: 600;
 }
 
 .font-trajan-black {
-  font-family: "trajan-sans-pro", sans-serif;
-  font-weight: 900;
-  font-style: normal;
+  font-family: var(--font-helvetica-now), 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
-/* Sistema de grid brutalista */
-.grid-container {
-  width: 100%;
-  max-width: 1440px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--container-margin);
-  padding-right: var(--container-margin);
-}
-
+/* Rejilla usada por los cuestionarios (antes "brutalista") */
 .grid-row {
   display: flex;
   flex-wrap: wrap;
   margin-left: calc(-1 * var(--grid-gutter) / 2);
   margin-right: calc(-1 * var(--grid-gutter) / 2);
+}
+
+:root {
+  --grid-gutter: 1rem;
 }
 
 .grid-col {
@@ -132,7 +120,6 @@
   width: 100%;
 }
 
-/* Columnas del 1 al 12 */
 @media (min-width: 640px) {
   .grid-col-1 { width: calc(100% / 12 * 1); }
   .grid-col-2 { width: calc(100% / 12 * 2); }
@@ -148,131 +135,13 @@
   .grid-col-12 { width: 100%; }
 }
 
-/* Espaciado brutalista */
-.brutalist-p-1 { padding: var(--space-1); }
-.brutalist-p-2 { padding: var(--space-2); }
-.brutalist-p-3 { padding: var(--space-3); }
-.brutalist-p-4 { padding: var(--space-4); }
-.brutalist-p-5 { padding: var(--space-5); }
-
-/* Padding direccional */
-.brutalist-pt-1 { padding-top: var(--space-1); }
-.brutalist-pt-2 { padding-top: var(--space-2); }
-.brutalist-pt-3 { padding-top: var(--space-3); }
-.brutalist-pt-4 { padding-top: var(--space-4); }
-.brutalist-pt-5 { padding-top: var(--space-5); }
-
-.brutalist-pb-1 { padding-bottom: var(--space-1); }
-.brutalist-pb-2 { padding-bottom: var(--space-2); }
-.brutalist-pb-3 { padding-bottom: var(--space-3); }
-.brutalist-pb-4 { padding-bottom: var(--space-4); }
-.brutalist-pb-5 { padding-bottom: var(--space-5); }
-
-.brutalist-pl-1 { padding-left: var(--space-1); }
-.brutalist-pl-2 { padding-left: var(--space-2); }
-.brutalist-pl-3 { padding-left: var(--space-3); }
-.brutalist-pl-4 { padding-left: var(--space-4); }
-.brutalist-pl-5 { padding-left: var(--space-5); }
-
-.brutalist-pr-1 { padding-right: var(--space-1); }
-.brutalist-pr-2 { padding-right: var(--space-2); }
-.brutalist-pr-3 { padding-right: var(--space-3); }
-.brutalist-pr-4 { padding-right: var(--space-4); }
-.brutalist-pr-5 { padding-right: var(--space-5); }
-
-.brutalist-m-1 { margin: var(--space-1); }
-.brutalist-m-2 { margin: var(--space-2); }
-.brutalist-m-3 { margin: var(--space-3); }
-.brutalist-m-4 { margin: var(--space-4); }
-.brutalist-m-5 { margin: var(--space-5); }
-
-/* Margen direccional */
-.brutalist-mt-1 { margin-top: var(--space-1); }
-.brutalist-mt-2 { margin-top: var(--space-2); }
-.brutalist-mt-3 { margin-top: var(--space-3); }
-.brutalist-mt-4 { margin-top: var(--space-4); }
-.brutalist-mt-5 { margin-top: var(--space-5); }
-
-.brutalist-mb-1 { margin-bottom: var(--space-1); }
-.brutalist-mb-2 { margin-bottom: var(--space-2); }
-.brutalist-mb-3 { margin-bottom: var(--space-3); }
-.brutalist-mb-4 { margin-bottom: var(--space-4); }
-.brutalist-mb-5 { margin-bottom: var(--space-5); }
-.brutalist-mb-6 { margin-bottom: var(--space-6); }
-.brutalist-mb-7 { margin-bottom: var(--space-7); }
-.brutalist-mb-8 { margin-bottom: var(--space-8); }
-
-.brutalist-ml-1 { margin-left: var(--space-1); }
-.brutalist-ml-2 { margin-left: var(--space-2); }
-.brutalist-ml-3 { margin-left: var(--space-3); }
-.brutalist-ml-4 { margin-left: var(--space-4); }
-.brutalist-ml-5 { margin-left: var(--space-5); }
-
-.brutalist-mr-1 { margin-right: var(--space-1); }
-.brutalist-mr-2 { margin-right: var(--space-2); }
-.brutalist-mr-3 { margin-right: var(--space-3); }
-.brutalist-mr-4 { margin-right: var(--space-4); }
-.brutalist-mr-5 { margin-right: var(--space-5); }
-
-/* Espaciado entre items en un contenedor */
-.brutalist-gap-1 { gap: var(--space-1); }
-.brutalist-gap-2 { gap: var(--space-2); }
-.brutalist-gap-3 { gap: var(--space-3); }
-.brutalist-gap-4 { gap: var(--space-4); }
-.brutalist-gap-5 { gap: var(--space-5); }
-
-.brutalist-card {
-  border: 2px solid;
-  padding: var(--space-4);
-  box-shadow: 5px 5px 0 0 rgba(0,0,0,0.8);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  margin-bottom: var(--space-4);
+.font-helveticaNowTextRegular {
+  font-family: var(--font-helvetica-now-text), 'Helvetica Neue', Helvetica, Arial,
+    sans-serif;
+  font-weight: 400;
 }
 
-.brutalist-card:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 7px 7px 0 0 rgba(0,0,0,0.9);
-}
-
-/* Contenedor con espacio inferior garantizado */
-.brutalist-container-safe {
-  margin-bottom: var(--space-6);
-  padding-bottom: var(--space-4);
-  position: relative;
-}
-
-.brutalist-container-safe::after {
-  content: '';
-  display: block;
-  height: var(--space-5);
-  width: 100%;
-  position: absolute;
-  bottom: calc(-1 * var(--space-5));
-}
-
-/* Layout de página con márgenes seguros */
-.brutalist-page {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding-bottom: var(--space-6);
-}
-
-.brutalist-main {
-  flex-grow: 1;
-  padding-bottom: var(--space-6);
-}
-
-/* Garantizar siempre margen inferior */
-@media (max-height: 768px) {
-  .brutalist-safe-bottom {
-    margin-bottom: var(--space-5);
-  }
-}
-
-/* Corrige el problema del margen colapsado */
-.brutalist-footer {
-  margin-top: auto;
-  padding-top: var(--space-4);
-  padding-bottom: var(--space-4);
+.font-helveticaNowDisplayBold {
+  font-family: var(--font-helvetica-now), 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 700;
 }

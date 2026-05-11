@@ -1,0 +1,57 @@
+/**
+ * Motion UX — animaciones mínimas (tokens Swiss + accesibilidad)
+ *
+ * - Entrada suave del contenido principal (main)
+ * - Scroll suave solo si el usuario no pide reducir movimiento
+ * - Transiciones cortas en enlaces sin utilidades Tailwind propias
+ */
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @keyframes ux-main-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.35rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  body > main {
+    animation: ux-main-in var(--swiss-duration-base) var(--swiss-easing-out) both;
+  }
+
+  /* Enlaces “desnudos” (p. ej. nav) — mismo timing que --duration-ux */
+  :where(a[href]) {
+    transition-property: color, text-decoration-color, border-color, opacity;
+    transition-duration: var(--swiss-duration-fast);
+    transition-timing-function: var(--swiss-easing-default);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  body > main {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

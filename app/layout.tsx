@@ -1,42 +1,29 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
-import "./globals.css";
-import { ThemeProvider } from "next-themes"
+import type { Metadata } from 'next'
+import { ThemeProvider } from 'next-themes'
 
+import { helveticaNow, helveticaNowText } from '@/lib/fonts'
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+import './globals.css'
 
 export const metadata: Metadata = {
-  title: "Qin-Na - Loto Blanco Lianhua - Shaolin Tradicional",
-  description: "Kung Fu - Shaolin Tradicional",
-};
+  title: 'Qin-Na - Loto Blanco Lianhua - Shaolin Tradicional',
+  description: 'Kung Fu - Shaolin Tradicional',
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="stylesheet" href="https://use.typekit.net/olq8rvr.css" />
-      </head>
+    <html lang="es" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${helveticaNow.variable} ${helveticaNowText.variable} font-sans antialiased`}
       >
-        <ThemeProvider attribute="class" defaultTheme="system">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
         </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }

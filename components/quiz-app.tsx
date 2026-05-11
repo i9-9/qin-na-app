@@ -395,12 +395,12 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
     return (
       <div className="w-full flex flex-col">
         <div className="flex-1 flex flex-col p-3">
-          <div className="border-2 border-foreground p-3 mb-3">
+          <div className="border border-border p-3 mb-3">
             <p className="font-trajan text-lg md:text-xl">{currentQuestion.text}</p>
           </div>
           
           {currentQuestion.type === 'image' && currentQuestion.imageUrl && (
-            <div className="mb-4 flex justify-center items-center border-2 border-foreground p-2 bg-background">
+            <div className="mb-4 flex justify-center items-center border border-border p-2 bg-background">
               <div className="relative w-full max-w-md h-auto">
                 <Image
                   src={currentQuestion.imageUrl}
@@ -422,7 +422,7 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
                 return (
                   <div key={index} className="grid-col grid-col-12">
                     <button
-                      className={`w-full text-left border-2 border-foreground p-2 transition-colors ${
+                      className={`w-full text-left border border-border p-2 transition-colors ${
                         selectedOption === option ? 'bg-primary text-primary-foreground' : ''
                       }`}
                       onClick={() => handleAnswerSelect(option)}
@@ -454,11 +454,11 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
                   onChange={(e) => setUserAnswer(e.target.value)}
                   onKeyDown={handleKeyPress}
                   disabled={isAnswered}
-                  className="w-full p-2 border-2 border-foreground bg-background font-mono outline-none"
+                  className="w-full p-2 border border-border bg-background font-mono outline-none"
                 />
               </div>
               <button 
-                className="w-full border-2 border-foreground p-2 font-trajan-bold bg-primary text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+                className="w-full border border-border p-2 font-trajan-bold bg-primary text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed mt-2"
                 disabled={!userAnswer.trim()}
                 onClick={handleNextQuestion}
               >
@@ -481,9 +481,9 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
         </div>
         
         {(currentQuestion.type === 'multipleChoice' || currentQuestion.type === 'image') && (
-          <div className="p-2 border-t-2 border-foreground flex-shrink-0 bg-background sticky bottom-0">
+          <div className="p-2 border-t border-border flex-shrink-0 bg-background sticky bottom-0">
             <button 
-              className="w-full border-2 border-foreground p-2 font-trajan-bold bg-primary text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full border border-border p-2 font-trajan-bold bg-primary text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={!selectedOption}
               onClick={handleNextQuestion}
             >
@@ -539,13 +539,13 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
           Elige el tipo de cuestionario
         </h2>
         
-        <div className="w-full mb-4 border-2 border-foreground p-3">
+        <div className="w-full mb-4 border border-border p-3">
           <h3 className="text-base font-trajan-bold mb-3 text-center">Modo Texto</h3>
           <div className="grid-row gap-2">
             <div className="grid-col grid-col-12 md:grid-col-4">
               <button 
                 onClick={() => setQuizType('basico')}
-                className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-background hover:bg-secondary"
+                className="w-full font-trajan-bold text-center py-3 border border-border bg-background hover:bg-secondary"
               >
                 Básico (1-10)
               </button>
@@ -553,7 +553,7 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
             <div className="grid-col grid-col-12 md:grid-col-4">
               <button 
                 onClick={() => setQuizType('blanco')}
-                className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-background hover:bg-secondary"
+                className="w-full font-trajan-bold text-center py-3 border border-border bg-background hover:bg-secondary"
               >
                 Blanco (1-18)
               </button>
@@ -561,7 +561,7 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
             <div className="grid-col grid-col-12 md:grid-col-4">
               <button 
                 onClick={() => setQuizType('avanzado')}
-                className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-background hover:bg-secondary"
+                className="w-full font-trajan-bold text-center py-3 border border-border bg-background hover:bg-secondary"
               >
                 Avanzado (1-32)
               </button>
@@ -569,13 +569,13 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
           </div>
         </div>
         
-        <div className="w-full mb-4 border-2 border-foreground p-3">
+        <div className="w-full mb-4 border border-border p-3">
           <h3 className="text-base font-trajan-bold mb-3 text-center">Modo Visual</h3>
           <div className="grid-row gap-2">
             <div className="grid-col grid-col-12 md:grid-col-4">
               <button 
                 onClick={() => setQuizType('basico-visual')}
-                className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-primary text-primary-foreground hover:bg-primary/90"
+                className="w-full font-trajan-bold text-center py-3 border border-border bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 Básico Visual (1-10)
               </button>
@@ -583,7 +583,7 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
             <div className="grid-col grid-col-12 md:grid-col-4">
               <button 
                 onClick={() => setQuizType('blanco-visual')}
-                className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-primary text-primary-foreground hover:bg-primary/90"
+                className="w-full font-trajan-bold text-center py-3 border border-border bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 Blanco Visual (1-18)
               </button>
@@ -591,7 +591,7 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
             <div className="grid-col grid-col-12 md:grid-col-4">
               <button 
                 onClick={() => setQuizType('avanzado-visual')}
-                className="w-full font-trajan-bold text-center py-3 border-2 border-foreground bg-primary text-primary-foreground hover:bg-primary/90"
+                className="w-full font-trajan-bold text-center py-3 border border-border bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 Avanzado Visual (1-32)
               </button>
@@ -600,14 +600,14 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
         </div>
         
         {!isVisualMode && quizType && (
-          <div className="w-full mb-4 border-2 border-foreground p-3">
+          <div className="w-full mb-4 border border-border p-3">
             <h3 className="text-base font-trajan-bold mb-2 text-center">Modo de respuesta</h3>
             
             <div className="grid-row gap-3">
               <div className="grid-col grid-col-6">
                 <button 
                   onClick={() => setAnswerMode('multipleChoice')}
-                  className={`w-full font-trajan text-center py-2 px-2 border-2 border-foreground ${
+                  className={`w-full font-trajan text-center py-2 px-2 border border-border ${
                     answerMode === 'multipleChoice' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-secondary'
                   }`}
                 >
@@ -622,7 +622,7 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
               <div className="grid-col grid-col-6">
                 <button 
                   onClick={() => setAnswerMode('text')}
-                  className={`w-full font-trajan text-center py-2 px-2 border-2 border-foreground ${
+                  className={`w-full font-trajan text-center py-2 px-2 border border-border ${
                     answerMode === 'text' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-secondary'
                   }`}
                 >
@@ -639,7 +639,7 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
         )}
         
         {isVisualMode && (
-          <div className="w-full mb-4 border-2 border-foreground p-3">
+          <div className="w-full mb-4 border border-border p-3">
             <p className="text-sm font-trajan text-center text-muted-foreground">
               En el modo visual, se mostrarán imágenes de las palancas y deberás identificar su nombre.
             </p>
@@ -648,7 +648,7 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
         
         <Link 
           href="/palancas"
-          className="mt-4 w-full border-2 border-foreground p-2 font-trajan-bold bg-background hover:bg-secondary flex items-center justify-center"
+          className="mt-4 w-full border border-border p-2 font-trajan-bold bg-background hover:bg-secondary flex items-center justify-center"
         >
           <BookOpen className="mr-2 h-4 w-4" />
           Ver listado de palancas
@@ -668,7 +668,7 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
         
         {statsVisible && (
           <div 
-            className="mt-2 w-full max-w-md border-2 border-foreground p-2"
+            className="mt-2 w-full max-w-md border border-border p-2"
           >
             <h3 className="text-lg font-trajan-bold mb-2 tracking-wide text-center">Resultados Anteriores</h3>
             <div className="space-y-1 max-h-[30vh]">
@@ -692,12 +692,12 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
       <div className="grid-row">
         <div className="grid-col grid-col-12">
           {score === shuffledQuestions.length ? (
-            <div className="border-2 border-foreground p-3 bg-primary mb-3">
+            <div className="border border-border p-3 bg-primary mb-3">
               <div className="text-primary-foreground text-4xl md:text-5xl font-trajan-black">100%</div>
               <div className="mt-1 font-trajan text-primary-foreground">¡Puntuación perfecta!</div>
             </div>
           ) : (
-            <div className="border-2 border-foreground p-3 mb-3">
+            <div className="border border-border p-3 mb-3">
               <div className="relative inline-block">
                 <svg className="w-24 h-24 md:w-28 md:h-28">
                   <circle
@@ -733,7 +733,7 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
       </div>
       
       {mistakes.length > 0 && (
-        <div className="border-2 border-foreground p-3 mb-3">
+        <div className="border border-border p-3 mb-3">
           <h3 className="text-base font-trajan-bold tracking-wide text-center border-b pb-1 mb-2">Preguntas incorrectas</h3>
           <div className="text-left max-h-[25vh]">
             {mistakes.map(id => {
@@ -751,7 +751,7 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
       
       <div className="grid-row mt-2">
         <div className="grid-col grid-col-6">
-          <button onClick={resetQuiz} className="w-full border-2 border-foreground p-2 font-trajan-bold bg-primary text-primary-foreground">
+          <button onClick={resetQuiz} className="w-full border border-border p-2 font-trajan-bold bg-primary text-primary-foreground">
             <div className="flex items-center justify-center">
               <RotateCcw className="mr-1 h-3 w-3" />
               Reiniciar
@@ -759,7 +759,7 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
           </button>
         </div>
         <div className="grid-col grid-col-6">
-          <button onClick={() => window.location.reload()} className="w-full border-2 border-foreground p-2 font-trajan-bold">
+          <button onClick={() => window.location.reload()} className="w-full border border-border p-2 font-trajan-bold">
             <div className="flex items-center justify-center">
               <XCircle className="mr-1 h-3 w-3" />
               Salir
@@ -813,7 +813,7 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
 
   return (
     <div className="h-full flex flex-col bg-background text-foreground border-0">
-      <header className="flex justify-between items-center py-2 px-3 border-b-2 border-foreground flex-shrink-0">
+      <header className="flex justify-between items-center py-2 px-3 border-b border-border flex-shrink-0">
         <div className="flex flex-row items-center space-x-3">
           <MobileMenu resetQuiz={resetQuiz} />
           <div className="flex items-center space-x-2">
@@ -863,7 +863,7 @@ const EnhancedQuizApp = forwardRef<QuizAppRef>((props, ref) => {
       <div className="flex-1 flex flex-col min-h-0">
         {!quizCompleted ? (
           <div className="flex flex-col h-full min-h-0">
-            <div className="border-b-2 border-foreground pb-1 pt-1 flex-shrink-0">
+            <div className="border-b border-border pb-1 pt-1 flex-shrink-0">
               <div className="flex justify-between items-center px-3">
                 <p className="text-xs md:text-sm font-mono">
                   Pregunta {currentQuestionIndex + 1} de {shuffledQuestions.length}
